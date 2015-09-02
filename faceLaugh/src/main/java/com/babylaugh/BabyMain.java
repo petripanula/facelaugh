@@ -151,7 +151,6 @@ public class BabyMain extends BaseGameActivity implements NumberPicker.OnValueCh
         	mSubscribedToInfiniteLaugh=true;
         }
 
-		
         //TODO
         //Just remove this
        // laughs = 0;
