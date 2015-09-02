@@ -150,7 +150,8 @@ public class BabyMain extends BaseGameActivity implements NumberPicker.OnValueCh
         	if(ENABLE_LOGS) Log.d(TAG, "InfiniteLaughsBought==1");
         	mSubscribedToInfiniteLaugh=true;
         }
-        	
+
+		
         //TODO
         //Just remove this
        // laughs = 0;
