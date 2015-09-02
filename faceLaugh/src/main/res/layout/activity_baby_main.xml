@@ -1,0 +1,128 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/screen_main"
+    android:background="#FF3D0D"
+    tools:context="com.babylaugh.BabyMain" >
+
+    <ImageView android:src="@drawable/wait" android:layout_width="wrap_content" android:layout_height="wrap_content"
+    android:id="@+id/screen_wait" android:layout_gravity="center" android:visibility="gone" />
+        
+    <!--
+         The primary full-screen view. This can be replaced with whatever view
+         is needed to present your content, e.g. VideoView, SurfaceView,
+         TextureView, etc.
+    -->
+ 
+    <ImageButton
+        android:id="@+id/imageButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+       	android:layout_centerHorizontal="true"
+        android:src="@drawable/baby_smile" />
+    
+    <ImageButton
+        android:id="@+id/BuyButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+		android:layout_alignParentBottom="true"
+		android:layout_centerHorizontal="true"
+		android:visibility="gone"
+		android:onClick="onInfiniteLaughButtonClicked"
+        android:src="@drawable/buy" />
+        
+     <ImageButton
+        android:id="@+id/button_sign_in"
+        android:background="@drawable/button_first_page"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+		android:layout_alignParentTop="true"
+        android:textSize="16sp"
+        android:textColor="#FFFFFFFF"
+        android:layout_marginBottom="5dip"
+        android:onClick="onSignInButtonClicked"
+        android:text="@string/signin"
+        android:src="@drawable/g_signin" />
+    
+    <Button
+        android:id="@+id/button_sign_out"
+        android:background="@drawable/button_first_page"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+		android:layout_alignParentTop="true"
+        android:textSize="16sp"
+        android:visibility="gone"
+        android:textColor="#FFFFFFFF"
+        android:layout_marginBottom="5dip"
+        android:onClick="onSignOutButtonClicked"
+        android:text="@string/signout" />
+    
+     <Spinner
+        android:id="@+id/game_type_spinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/button_first_page"
+        android:popupBackground="@drawable/button_first_page"
+        android:layout_below="@+id/button_sign_in"
+        android:prompt="@string/select_game_type" 
+        android:textSize="20sp"
+        android:layout_marginBottom="10dip"/>
+        
+    <TextView
+        android:id="@+id/ConsumedLaughs"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+		android:layout_below="@+id/imageButton"
+        android:textColor="#ffffff"
+        android:textSize="20sp"
+        android:text="0" />
+    
+    <Button
+        android:id="@+id/StartButton"
+        android:background="@drawable/button_first_page"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+		android:layout_below="@+id/imageButton"
+		android:visibility="gone"
+		android:textSize="16sp"
+		android:layout_marginBottom="5dip"
+		android:textColor="#FFFFFFFF"
+		android:onClick="StartButtonClicked"
+		android:text="@string/mystart" />
+        
+    <Button
+        android:id="@+id/StopButton"
+        android:background="@drawable/button_first_page"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+		android:layout_below="@+id/imageButton"
+		android:visibility="gone"
+		android:textSize="16sp"
+		android:layout_marginBottom="5dip"
+		android:textColor="#FFFFFFFF"
+		android:onClick="StopButtonClicked"
+		android:text="@string/mystop" />
+    
+      <Button
+        android:id="@+id/settings"
+        android:background="@drawable/button_first_page"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+		android:layout_below="@+id/StartButton"
+		android:visibility="gone"
+		android:textSize="16sp"
+        android:textColor="#FFFFFFFF"
+        android:layout_marginBottom="5dip"
+        android:onClick="show"
+        android:text="@string/settings" />
+            
+</RelativeLayout>
