@@ -1,6 +1,5 @@
 package com.babylaugh;
 
-
 import java.util.Random;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -1113,9 +1112,9 @@ public class BabyMain extends BaseGameActivity implements NumberPicker.OnValueCh
 
    public void show(View arg0)
    {
-
-        final Dialog d = new Dialog(BabyMain.this);
-        d.setTitle("Set Time For Music Box (min)");
+       final Dialog d;
+       d = new Dialog(BabyMain.this);
+       d.setTitle("Set Time For Music Box (min)");
         d.setContentView(R.layout.dialog);
         Button b1 = (Button) d.findViewById(R.id.button1);
         Button b2 = (Button) d.findViewById(R.id.button2);
