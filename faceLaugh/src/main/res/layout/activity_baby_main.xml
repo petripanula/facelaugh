@@ -81,7 +81,21 @@
 		android:layout_below="@+id/imageButton"
         android:textColor="#ffffff"
         android:textSize="20sp"
+        android:layout_marginBottom="10dip"
         android:text="0" />
+
+    <Spinner
+        android:id="@+id/sound_type_spinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:visibility="gone"
+        android:background="@drawable/button_first_page"
+        android:popupBackground="@drawable/button_first_page"
+        android:layout_below="@+id/ConsumedLaughs"
+        android:prompt="@string/select_sound_type"
+        android:textSize="20sp"
+        android:layout_marginBottom="10dip"/>
     
     <Button
         android:id="@+id/StartButton"
