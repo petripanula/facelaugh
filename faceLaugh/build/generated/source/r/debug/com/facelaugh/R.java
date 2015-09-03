@@ -1141,9 +1141,9 @@ containing a value of this type.
     public static final class id {
         public static final int BuyButton=0x7f0c0051;
         public static final int ConsumedLaughs=0x7f0c0055;
-        public static final int MynumberPicker=0x7f0c0059;
-        public static final int StartButton=0x7f0c0056;
-        public static final int StopButton=0x7f0c0057;
+        public static final int MynumberPicker=0x7f0c005a;
+        public static final int StartButton=0x7f0c0057;
+        public static final int StopButton=0x7f0c0058;
         public static final int action_bar=0x7f0c002e;
         public static final int action_bar_activity_content=0x7f0c0000;
         public static final int action_bar_container=0x7f0c002d;
@@ -1159,8 +1159,8 @@ containing a value of this type.
         public static final int always=0x7f0c0016;
         public static final int beginning=0x7f0c000f;
         public static final int book_now=0x7f0c0026;
-        public static final int button1=0x7f0c005b;
-        public static final int button2=0x7f0c005a;
+        public static final int button1=0x7f0c005c;
+        public static final int button2=0x7f0c005b;
         public static final int button_sign_in=0x7f0c0052;
         public static final int button_sign_out=0x7f0c0053;
         public static final int buyButton=0x7f0c0022;
@@ -1193,7 +1193,7 @@ containing a value of this type.
         public static final int match_parent=0x7f0c0024;
         public static final int middle=0x7f0c0011;
         public static final int monochrome=0x7f0c002b;
-        public static final int my_spinner_text=0x7f0c005c;
+        public static final int my_spinner_text=0x7f0c005d;
         public static final int never=0x7f0c0019;
         public static final int none=0x7f0c0012;
         public static final int normal=0x7f0c0007;
@@ -1216,11 +1216,12 @@ containing a value of this type.
         public static final int search_src_text=0x7f0c0049;
         public static final int search_voice_btn=0x7f0c004d;
         public static final int selectionDetails=0x7f0c0023;
-        public static final int settings=0x7f0c0058;
+        public static final int settings=0x7f0c0059;
         public static final int shortcut=0x7f0c0040;
         public static final int showCustom=0x7f0c000b;
         public static final int showHome=0x7f0c000c;
         public static final int showTitle=0x7f0c000d;
+        public static final int sound_type_spinner=0x7f0c0056;
         public static final int split_action_bar=0x7f0c0030;
         public static final int strict_sandbox=0x7f0c0021;
         public static final int submit_area=0x7f0c004b;
@@ -1282,12 +1283,12 @@ containing a value of this type.
         public static final int bell_ringing_03=0x7f05000b;
         public static final int bell_ringing_04=0x7f05000c;
         public static final int bell_ringing_05=0x7f05000d;
-        public static final int box_mu=0x7f05000e;
-        public static final int box_mu2=0x7f05000f;
-        public static final int box_mu3=0x7f050010;
-        public static final int musicbox=0x7f050011;
-        public static final int small_bell_ring_01a=0x7f050012;
-        public static final int small_bell_ringing_01=0x7f050013;
+        public static final int bell_ringing_06=0x7f05000e;
+        public static final int bell_ringing_07=0x7f05000f;
+        public static final int box_mu=0x7f050010;
+        public static final int box_mu2=0x7f050011;
+        public static final int box_mu3=0x7f050012;
+        public static final int musicbox=0x7f050013;
     }
     public static final class string {
         public static final int TimeToRun=0x7f060027;
@@ -1341,9 +1342,10 @@ containing a value of this type.
         public static final int mystart=0x7f060031;
         public static final int mystop=0x7f060032;
         public static final int select_game_type=0x7f060033;
-        public static final int settings=0x7f060034;
-        public static final int signin=0x7f060035;
-        public static final int signout=0x7f060036;
+        public static final int select_sound_type=0x7f060034;
+        public static final int settings=0x7f060035;
+        public static final int signin=0x7f060036;
+        public static final int signout=0x7f060037;
         public static final int wallet_buy_button_place_holder=0x7f060026;
     }
     public static final class style {
