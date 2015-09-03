@@ -65,7 +65,7 @@ public class BabyMain extends BaseGameActivity implements NumberPicker.OnValueCh
 
 	String PlayerName="NoName";
 	
-	 //TODO for release builds set to false
+	 //TODO for release builds set to ENABLE_LOGS = false
 	public static final boolean ENABLE_LOGS = false;
 
 	static final String TAG = "Pete";
@@ -94,7 +94,7 @@ public class BabyMain extends BaseGameActivity implements NumberPicker.OnValueCh
     static final String SKU_PREMIUM = "premium";
     static final String SKU_GAS = "gas";
 
-    //TODO
+    //TODO make sure to use infinite_laughs for release
     // SKU for our subscription (infinite gas)
     static final String SKU_INFINITE_LAUGH = "infinite_laughs"; 
     //static final String SKU_INFINITE_LAUGH = "android.test.purchased";  
@@ -109,7 +109,7 @@ public class BabyMain extends BaseGameActivity implements NumberPicker.OnValueCh
     static final int LAUGHS_MAX = 50;
     
     //Max time in seconds until purchase is requested
-    //TODO
+    //TODO use 3600 for release builds
     static final int MAX_SLEEPER_TIME = 3600;
     
     int laughs;
@@ -152,7 +152,7 @@ public class BabyMain extends BaseGameActivity implements NumberPicker.OnValueCh
         	mSubscribedToInfiniteLaugh=true;
         }
 
-        //TODO
+        //TODO  remove zeroing these variables for release builds..
         //Just remove this
        // laughs = 0;
        // FreeSleeperRunningtime = 0;
@@ -571,10 +571,10 @@ public class BabyMain extends BaseGameActivity implements NumberPicker.OnValueCh
     	
  	   	findViewById(R.id.StartButton).setVisibility(View.GONE);
  	   	findViewById(R.id.StopButton).setVisibility(View.GONE);
- 	   findViewById(R.id.settings).setVisibility(View.GONE); 
- 	   
+ 	    findViewById(R.id.settings).setVisibility(View.GONE);
+        findViewById(R.id.sound_type_spinner).setVisibility(View.GONE);
+
 		findViewById(R.id.BuyButton).setVisibility(View.VISIBLE);
-		
 		findViewById(R.id.screen_main).setBackgroundColor(Color.GRAY);
 		
 	   	//TextView viewlaughs;
@@ -669,6 +669,7 @@ public class BabyMain extends BaseGameActivity implements NumberPicker.OnValueCh
        spe.putInt("laughs", laughs);
        spe.putInt("test", InfiniteLaughsBought);
        spe.putInt("Gametype", Gametype);
+       spe.putInt("Soundtype", Soundtype);
        spe.putInt("FreeSleeperRunningtime", FreeSleeperRunningtime);
        spe.putInt("TimeToRunSleeper", TimeToRunSleeper);
        //spe.commit();
@@ -684,12 +685,14 @@ public class BabyMain extends BaseGameActivity implements NumberPicker.OnValueCh
        laughs = sp.getInt("laughs", 0);
        InfiniteLaughsBought = sp.getInt("test", 0);
        Gametype = sp.getInt("Gametype", 0);
+       Soundtype = sp.getInt("Soundtype", 0);
        FreeSleeperRunningtime = sp.getInt("FreeSleeperRunningtime", 60);     
        TimeToRunSleeper = sp.getInt("TimeToRunSleeper", 5);
        
        if(ENABLE_LOGS) Log.d("Pete", "Loaded data: laughs = " + String.valueOf(laughs));
        if(ENABLE_LOGS) Log.d("Pete", "Loaded data: InfiniteLaughsBought = " + String.valueOf(InfiniteLaughsBought));
        if(ENABLE_LOGS) Log.d("Pete", "Loaded data: Gametype = " + String.valueOf(Gametype));
+       if(ENABLE_LOGS) Log.d("Pete", "Loaded data: Soundtype = " + String.valueOf(Soundtype));
        if(ENABLE_LOGS) Log.d("Pete", "Loaded data: FreeSleeperRunningtime = " + String.valueOf(FreeSleeperRunningtime));
    }
    
@@ -1196,9 +1199,10 @@ public class BabyMain extends BaseGameActivity implements NumberPicker.OnValueCh
 
    public void show(View arg0)
    {
-       final Dialog d;
-       d = new Dialog(BabyMain.this);
-       d.setTitle("Set Time For Music Box (min)");
+        final Dialog d;
+        TimeToRunSleeper_tmp = TimeToRunSleeper;
+        d = new Dialog(BabyMain.this);
+        d.setTitle("Set Time For Music Box (min)");
         d.setContentView(R.layout.dialog);
         Button b1 = (Button) d.findViewById(R.id.button1);
         Button b2 = (Button) d.findViewById(R.id.button2);
