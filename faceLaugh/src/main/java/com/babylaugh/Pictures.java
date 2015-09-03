@@ -50,6 +50,19 @@ public class Pictures {
 		R.raw.baby_laughing_07,
 		R.raw.baby_laughing_05,
 	};
+
+	public static final int[] RING_IDS = {
+			R.raw.bell_ringing_01,
+			R.raw.bell_ringing_01,
+			R.raw.bell_ringing_02,
+			R.raw.bell_ringing_03,
+			R.raw.bell_ringing_04,
+			R.raw.bell_ringing_05,
+			R.raw.bell_ringing_06,
+			R.raw.bell_ringing_07,
+			R.raw.bell_ringing_02,
+			R.raw.bell_ringing_03,
+	};
 	
 	public static final int[] SOUND_BOX_IDS = {
 		R.raw.box_mu,

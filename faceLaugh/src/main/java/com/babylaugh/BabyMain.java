@@ -61,7 +61,8 @@ public class BabyMain extends BaseGameActivity implements NumberPicker.OnValueCh
 	//public static final String GAME_SAVINGS = "GAME_SAVINGS";
 	
 	String[] GameTypeValues = { "Touch Mode", "Music Box Mode"};
-	
+    String[] SoundTypeValues = { "Laugh sounds", "Ring Sounds"};
+
 	String PlayerName="NoName";
 	
 	 //TODO for release builds set to false
@@ -114,6 +115,7 @@ public class BabyMain extends BaseGameActivity implements NumberPicker.OnValueCh
     int laughs;
     
     int Gametype;
+    int Soundtype;
     
     int FreeSleeperRunningtime;
     
@@ -203,66 +205,119 @@ public class BabyMain extends BaseGameActivity implements NumberPicker.OnValueCh
 		GameTypeSpinner.setSelection(Gametype);
 
 		GameTypeSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
-			 
+
+            @Override
+            public void onItemSelected(AdapterView<?> adapter, View v, int position, long id) {
+                // On selecting a spinner item
+                String item = adapter.getItemAtPosition(position).toString();
+
+                if (ENABLE_LOGS) Log.v("Pete", "GameTypeSpinner position: " + position);
+                if (ENABLE_LOGS) Log.v("Pete", "GameTypeSpinner onItemSelected: " + item);
+
+                if (mp != null) {
+                    mp.release();
+                    mp = null;
+                }
+
+                if (MyCountDownTimer != null)
+                    MyCountDownTimer.cancel();
+
+                switch (position) {
+                    case 0:
+                        if (ENABLE_LOGS) Log.v("Pete", "spinner - clicked touch");
+                        Gametype = 0;
+                        saveData();
+                        findViewById(R.id.StartButton).setVisibility(View.GONE);
+                        findViewById(R.id.StopButton).setVisibility(View.GONE);
+                        findViewById(R.id.ConsumedLaughs).setVisibility(View.VISIBLE);
+                        findViewById(R.id.settings).setVisibility(View.GONE);
+
+                        findViewById(R.id.sound_type_spinner).setVisibility(View.VISIBLE);
+
+                        if (laughs >= LAUGHS_MAX && !mSubscribedToInfiniteLaugh)
+                            updateEndofFreeStuff();
+                        else
+                            updateUiDefault();
+
+                        break;
+                    case 1:
+                        if (ENABLE_LOGS) Log.v("Pete", "spinner - clicked sleeper");
+                        Gametype = 1;
+                        saveData();
+                        findViewById(R.id.StartButton).setVisibility(View.VISIBLE);
+                        findViewById(R.id.settings).setVisibility(View.VISIBLE);
+                        findViewById(R.id.StopButton).setVisibility(View.GONE);
+                        findViewById(R.id.ConsumedLaughs).setVisibility(View.GONE);
+
+                        findViewById(R.id.sound_type_spinner).setVisibility(View.GONE);
+
+                        if (FreeSleeperRunningtime >= MAX_SLEEPER_TIME && !mSubscribedToInfiniteLaugh)
+                            updateEndofFreeStuff();
+                        else
+                            updateUiDefault();
+
+                        break;
+                    default:
+                        if (ENABLE_LOGS)
+                            Log.v("Pete", "position is not set so we use 0 as default...");
+
+                        break;
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> arg0) {
+
+
+            }
+        });
+
+
+        Spinner SoundTypeSpinner = (Spinner) findViewById(R.id.sound_type_spinner);
+        SoundTypeSpinner.setAdapter(new MyAdapterSoundType(this, R.layout.my_spinner, SoundTypeValues));
+        SoundTypeSpinner.setSelection(Soundtype);
+
+        SoundTypeSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
+
             @Override
             public void onItemSelected(AdapterView<?> adapter, View v,int position, long id) {
                 // On selecting a spinner item
                 String item = adapter.getItemAtPosition(position).toString();
- 
-                if(ENABLE_LOGS) Log.v("Pete", "GameTypeSpinner position: " + position);
-                if(ENABLE_LOGS) Log.v("Pete", "GameTypeSpinner onItemSelected: " + item);
-        	    
- 			   if (mp != null) {
- 			      mp.release();
- 			      mp = null;
- 			   }
- 			   
- 		       if(MyCountDownTimer!=null)
- 				  MyCountDownTimer.cancel();
- 			   
-                switch(position) {
-	    	        case 0:
-		            	if(ENABLE_LOGS) Log.v("Pete", "spinner - clicked touch");
-		            	Gametype = 0;
-		            	saveData();
-		         	   	findViewById(R.id.StartButton).setVisibility(View.GONE);
-		         	   	findViewById(R.id.StopButton).setVisibility(View.GONE);
-		         	    findViewById(R.id.ConsumedLaughs).setVisibility(View.VISIBLE);		         	    
-		         	    findViewById(R.id.settings).setVisibility(View.GONE);
 
-		         	    if(laughs >= LAUGHS_MAX && !mSubscribedToInfiniteLaugh)
-		         		    updateEndofFreeStuff();
-		         	    else
-		         	    	updateUiDefault();
-			         	   
-		            	break;
-	    	        case 1:
-		            	if(ENABLE_LOGS) Log.v("Pete", "spinner - clicked sleeper");
-		            	Gametype = 1;
-		            	saveData(); 
-		         	   	findViewById(R.id.StartButton).setVisibility(View.VISIBLE);
-		         	    findViewById(R.id.settings).setVisibility(View.VISIBLE);
-		         	   	findViewById(R.id.StopButton).setVisibility(View.GONE);
-		         	    findViewById(R.id.ConsumedLaughs).setVisibility(View.GONE);
-		         	       
-		         	   if(FreeSleeperRunningtime >= MAX_SLEEPER_TIME && !mSubscribedToInfiniteLaugh)
-		         		   updateEndofFreeStuff();
-		         	   else
-		         		   updateUiDefault();
-		         	   
-	    	            break;
-	    	        default:
-	    	        	if(ENABLE_LOGS) Log.v("Pete", "position is not set so we use 0 as default...");
-	
-	    	            break;   	
+                if(ENABLE_LOGS) Log.v("Pete", "SoundTypeSpinner position: " + position);
+                if(ENABLE_LOGS) Log.v("Pete", "SoundTypeSpinner onItemSelected: " + item);
+
+                if (mp != null) {
+                    mp.release();
+                    mp = null;
+                }
+
+                switch(position) {
+                    case 0:
+                        if(ENABLE_LOGS) Log.v("Pete", "spinner - clicked laughs");
+                        Soundtype = 0;
+                        saveData();
+
+                        break;
+                    case 1:
+                        if(ENABLE_LOGS) Log.v("Pete", "spinner - clicked rings");
+                        Soundtype = 1;
+                        saveData();
+
+                        break;
+                    default:
+                        if(ENABLE_LOGS) Log.v("Pete", "position is not set so we use 0 as default...");
+
+                        break;
                 }
             }
-                @Override
-                public void onNothingSelected(AdapterView<?> arg0) {
-                   
-     
-                }
-            });
+            @Override
+            public void onNothingSelected(AdapterView<?> arg0) {
+
+
+            }
+        });
+
 		
 		updateUi(true);
 		
@@ -368,11 +423,11 @@ public class BabyMain extends BaseGameActivity implements NumberPicker.OnValueCh
 	    	viewlaughs.setTypeface(viewlaughs.getTypeface(), Typeface.BOLD);
 	    	
 	    	if(mSubscribedToInfiniteLaugh){
-	    		viewlaughs.setText("Infinite Laughs Purchased!");
+	    		viewlaughs.setText("Infinite Clicks Purchased!");
 	    		laughs = 0;
 	    	}
 	    	else
-	    		viewlaughs.setText("Laughs: " + laughs + "/" + LAUGHS_MAX);
+	    		viewlaughs.setText("Clicks: " + laughs + "/" + LAUGHS_MAX);
 	    		
 	    	
 	    	nbr_of_pictures = Pictures.SMILEY_IDS.length;
@@ -391,7 +446,12 @@ public class BabyMain extends BaseGameActivity implements NumberPicker.OnValueCh
 	    	picture.setScaleType(ImageView.ScaleType.FIT_XY);
 	    	
 	    	if(!start && Gametype==0){
-	    		mp = MediaPlayer.create(this, Pictures.SOUND_IDS[pic_id]);
+
+                if(Soundtype == 0)
+	    		    mp = MediaPlayer.create(this, Pictures.SOUND_IDS[pic_id]);
+                else
+                    mp = MediaPlayer.create(this, Pictures.RING_IDS[pic_id]);
+
 	    		mp.start();
 	    	}
 	    	
@@ -472,11 +532,11 @@ public class BabyMain extends BaseGameActivity implements NumberPicker.OnValueCh
     	viewlaughs.setTypeface(viewlaughs.getTypeface(), Typeface.BOLD);
     	
     	if(mSubscribedToInfiniteLaugh){
-    		viewlaughs.setText("Infinite Laughs Purchased!");
+    		viewlaughs.setText("Infinite Clicks Purchased!");
     		laughs = 0;
     	}
     	else
-    		viewlaughs.setText("Laughs: " + laughs + "/" + LAUGHS_MAX);
+    		viewlaughs.setText("Clicks: " + laughs + "/" + LAUGHS_MAX);
     		
     	
     	//nbr_of_pictures = Pictures.SMILEY_IDS.length;
@@ -524,7 +584,7 @@ public class BabyMain extends BaseGameActivity implements NumberPicker.OnValueCh
     	viewlaughs.setTypeface(viewlaughs.getTypeface(), Typeface.BOLD);
     	
     	if(Gametype==0){
-    		viewlaughs.setText("End of Laughs -  " + LAUGHS_MAX + "/" + LAUGHS_MAX);    	
+    		viewlaughs.setText("End of Clicks -  " + LAUGHS_MAX + "/" + LAUGHS_MAX);
     	}
     	else{
     		viewlaughs.setText("End of free sleeper time!"); 
@@ -1058,8 +1118,32 @@ public class BabyMain extends BaseGameActivity implements NumberPicker.OnValueCh
    		} 
    }
 
-   
-   public void SetCountDownTimer(long startfromthis_ms) {
+
+    public class MyAdapterSoundType extends ArrayAdapter<String> {
+        public MyAdapterSoundType(Context ctx, int txtViewResourceId, String[] objects) {
+            super(ctx, txtViewResourceId, objects);
+        }
+
+        @Override public View getDropDownView(int position, View cnvtView, ViewGroup prnt) {
+            return getCustomView(position, cnvtView, prnt);
+        }
+
+        @Override public View getView(int pos, View cnvtView, ViewGroup prnt) {
+            return getCustomView(pos, cnvtView, prnt);
+        }
+
+        public View getCustomView(int position, View convertView, ViewGroup parent) {
+            LayoutInflater inflater = getLayoutInflater();
+            View mySpinner = inflater.inflate(R.layout.my_spinner, parent, false);
+            TextView main_text = (TextView) mySpinner .findViewById(R.id.my_spinner_text);
+            main_text.setText(SoundTypeValues[position]);
+            return mySpinner;
+        }
+    }
+
+
+
+    public void SetCountDownTimer(long startfromthis_ms) {
 	 	  
 	    MyCountDownTimer = new CountDownTimer(startfromthis_ms, 1000) {
    		
