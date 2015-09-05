@@ -492,8 +492,7 @@ public class BabyMain extends BaseGameActivity implements NumberPicker.OnValueCh
     		updateEndofFreeStuff();
 	    	
     	}
-    	
-    	
+
     }
     
     // updates UI to reflect model
