@@ -1,0 +1,4 @@
+include ':androidsupportv7appcompat'
+include ':googleplayservices_lib'
+include ':baseGameUtils'
+include ':faceLaugh'
