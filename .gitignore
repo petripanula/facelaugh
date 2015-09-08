@@ -3,6 +3,8 @@
 */build/
 faceLaugh/build/
 /faceLaugh/build/
+FaceLaugh/build/
+/FaceLaugh/build/
 
 # Crashlytics configuations
 com_crashlytics_export_strings.xml
