@@ -47,8 +47,8 @@ import com.google.android.gms.games.Games;
 import com.google.android.gms.games.Player;
 import com.google.example.games.basegameutils.BaseGameActivity;
 
+public class BabyMain extends BaseGameActivity implements NumberPicker.OnValueChangeListener,RateMeMaybe.OnRMMUserChoiceListener {
 
-public class BabyMain extends BaseGameActivity implements NumberPicker.OnValueChangeListener  {
 	
 	private MediaPlayer mp;
 	
@@ -105,8 +105,8 @@ public class BabyMain extends BaseGameActivity implements NumberPicker.OnValueCh
     // Graphics for the gas gauge
     //static int[] TANK_RES_IDS = { R.drawable.gas0, R.drawable.gas1, R.drawable.gas2,R.drawable.gas3, R.drawable.gas4 };
 
-    // How many units (1/4 tank is our unit) fill in the tank.
-    static final int LAUGHS_MAX = 50;
+    // How many free clicks.
+    static final int LAUGHS_MAX = 100;
     
     //Max time in seconds until purchase is requested
     //TODO use 3600 for release builds
@@ -320,6 +320,26 @@ public class BabyMain extends BaseGameActivity implements NumberPicker.OnValueCh
 
 		
 		updateUi(true);
+
+
+        /************* testing rate my app ******************/
+        if (InfiniteLaughsBought==1) {
+            if (ENABLE_LOGS) Log.v("Pete", "testing rate my app.....");
+            //RateMeMaybe.resetData(this);
+            RateMeMaybe rmm = new RateMeMaybe(this);
+            rmm.setPromptMinimums(10, 2, 5, 2);
+            //rmm.setPromptMinimums(0, 0, 0, 0);
+            rmm.setRunWithoutPlayStore(true);
+            rmm.setAdditionalListener(this);
+            rmm.setDialogMessage("You seem to like this app, "
+                    + "since you have already used it %totalLaunchCount% times! "
+                    + "It would be great if you took a moment to rate it.");
+            rmm.setDialogTitle("Rate this app");
+            rmm.setPositiveBtn("Yes!");
+            rmm.run();
+        }
+        /***********************************/
+
 		
     }
     
@@ -394,14 +414,22 @@ public class BabyMain extends BaseGameActivity implements NumberPicker.OnValueCh
     	int PicNumberWaidth = (int) ( windowWidth/1.2);
     	int PicNumberHeight = windowHeight/2;
     	
-    	if(laughs >= LAUGHS_MAX && Gametype==0)
-    		thistypelocked = true;
-    	
-    	if(FreeSleeperRunningtime >= MAX_SLEEPER_TIME && Gametype==1)
-    		thistypelocked = true;
-    	
-    	
-    	if (!thistypelocked || mSubscribedToInfiniteLaugh) {
+     if(laughs >= LAUGHS_MAX && Gametype==0) {
+            thistypelocked = true;
+
+            if(!mSubscribedToInfiniteLaugh)
+                easyTracker.send(MapBuilder.createEvent("MaxLaughs reached","laughs", "2", null).build());
+        }
+
+        if(FreeSleeperRunningtime >= MAX_SLEEPER_TIME && Gametype==1) {
+            thistypelocked = true;
+
+            if(!mSubscribedToInfiniteLaugh)
+                easyTracker.send(MapBuilder.createEvent("FreeSleeper time consumed","time", "3", null).build());
+        }
+
+
+        if (!thistypelocked || mSubscribedToInfiniteLaugh) {
     		
     		findViewById(R.id.screen_main).setBackgroundColor(Color.RED);
     		
@@ -802,7 +830,7 @@ public class BabyMain extends BaseGameActivity implements NumberPicker.OnValueCh
            }
            else if (purchase.getSku().equals(SKU_INFINITE_LAUGH)) {
                // bought the infinite gas subscription
-               if(ENABLE_LOGS) Log.d(TAG, "Infinite gas subscription purchased.");
+               if(ENABLE_LOGS) Log.d(TAG, "Infinite laugh/time subscription purchased.");
                alert("Thank you for subscribing to infinite laughs and sleeper time!");
                mSubscribedToInfiniteLaugh = true;
                laughs = LAUGHS_MAX;
@@ -810,6 +838,7 @@ public class BabyMain extends BaseGameActivity implements NumberPicker.OnValueCh
                saveData();
                updateUi(false);
                setWaitScreen(false);
+               easyTracker.send(MapBuilder.createEvent("SubscribedToInfiniteLaugh", "order", "4", null).build());
            }
        }
    };
@@ -1230,6 +1259,29 @@ public class BabyMain extends BaseGameActivity implements NumberPicker.OnValueCh
       d.show();
 
    }
+
+    @Override
+    public void handlePositive() {
+        Toast.makeText(this, "Positive", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void handleNeutral() {
+        Toast.makeText(this, "Neutral", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void handleNegative() {
+        Toast.makeText(this, "Negative", Toast.LENGTH_SHORT).show();
+
+    }
+
+    @Override
+    public void RatingStarted() {
+        Toast.makeText(this, "RatingStarted", Toast.LENGTH_SHORT).show();
+        easyTracker.send(MapBuilder.createEvent("RatingStarted", "rating", "5", null).build());
+
+    }
    
    @Override
    public void onStart() {

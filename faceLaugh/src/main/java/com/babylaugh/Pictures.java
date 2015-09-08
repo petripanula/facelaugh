@@ -18,7 +18,17 @@ public class Pictures {
 			R.drawable.yellow,
 			R.drawable.pink,
 			R.drawable.green,
-	};
+			R.drawable.rainbow,
+			R.drawable.rainbow2,
+			R.drawable.rainbow3,
+			R.drawable.rainbow4,
+			R.drawable.rainbow5,
+			R.drawable.rainbow6,
+			R.drawable.rainbow7,
+			R.drawable.rainbow8,
+            R.drawable.rainbow9,
+            R.drawable.rainbow10,
+};
 	
 	
 	public static final int[] SMILEY_SAD_IDS = {
