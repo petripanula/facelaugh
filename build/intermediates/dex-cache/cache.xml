@@ -2,46 +2,46 @@
 <items version="2" >
 
     <item
-        jar="C:\Users\ppanula\StudioProjects\FaceLaugh\faceLaugh\build\intermediates\exploded-aar\FaceLaugh\androidsupportv7appcompat\unspecified\jars\classes.jar"
+        jar="C:\Users\ppanula\StudioProjects\FaceLaugh\faceLaugh\build\intermediates\exploded-aar\FaceLaugh\googleplayservices_lib\unspecified\jars\libs\google-play-services.jar"
         jumboMode="false"
         revision="23.0.0"
-        sha1="ada1e173e054091931a6f49c2204459c88891d0d">
-        <dex dex="C:\Users\ppanula\StudioProjects\FaceLaugh\faceLaugh\build\intermediates\pre-dexed\debug\classes-ebd03c1dc4d6e5d8e6cc192ec41a368d4aeba5a9.jar" />
-    </item>
-    <item
-        jar="C:\Users\ppanula\StudioProjects\FaceLaugh\faceLaugh\libs\libGoogleAnalyticsServices.jar"
-        jumboMode="false"
-        revision="23.0.0"
-        sha1="e887c6c9b31b39a39b0eaba981448b78902ea813">
-        <dex dex="C:\Users\ppanula\StudioProjects\FaceLaugh\faceLaugh\build\intermediates\pre-dexed\debug\libGoogleAnalyticsServices-d6d599cfcdb1445c1d15871a46c0f46729d3b1a8.jar" />
+        sha1="d71573c9c5ea98a8db47ad6ff993a63d492b3bfa">
+        <dex dex="C:\Users\ppanula\StudioProjects\FaceLaugh\faceLaugh\build\intermediates\pre-dexed\release\google-play-services-9f9b0503a58758e5c237b52e154dc64f2f012a8e.jar" />
     </item>
     <item
         jar="C:\Users\ppanula\StudioProjects\FaceLaugh\faceLaugh\build\intermediates\exploded-aar\FaceLaugh\baseGameUtils\unspecified\jars\classes.jar"
         jumboMode="false"
         revision="23.0.0"
-        sha1="ecb76384d1ed8627b6390dadf1a539544e6faf5a">
-        <dex dex="C:\Users\ppanula\StudioProjects\FaceLaugh\faceLaugh\build\intermediates\pre-dexed\debug\classes-0701e1989c14b6b3037daf389b7096f00d9d590a.jar" />
-    </item>
-    <item
-        jar="C:\Users\ppanula\StudioProjects\FaceLaugh\faceLaugh\build\intermediates\exploded-aar\FaceLaugh\googleplayservices_lib\unspecified\jars\libs\google-play-services.jar"
-        jumboMode="false"
-        revision="23.0.0"
-        sha1="d71573c9c5ea98a8db47ad6ff993a63d492b3bfa">
-        <dex dex="C:\Users\ppanula\StudioProjects\FaceLaugh\faceLaugh\build\intermediates\pre-dexed\debug\google-play-services-9f9b0503a58758e5c237b52e154dc64f2f012a8e.jar" />
+        sha1="11b5d3c8d69c40136b7090b993a9d02f82425f5e">
+        <dex dex="C:\Users\ppanula\StudioProjects\FaceLaugh\faceLaugh\build\intermediates\pre-dexed\release\classes-0701e1989c14b6b3037daf389b7096f00d9d590a.jar" />
     </item>
     <item
         jar="C:\Users\ppanula\StudioProjects\FaceLaugh\faceLaugh\build\intermediates\exploded-aar\FaceLaugh\baseGameUtils\unspecified\jars\libs\android-support-v4.jar"
         jumboMode="false"
         revision="23.0.0"
         sha1="cb6883d96005bc85b3e868f204507ea5b4fa9bbf">
-        <dex dex="C:\Users\ppanula\StudioProjects\FaceLaugh\faceLaugh\build\intermediates\pre-dexed\debug\android-support-v4-4452c79eb8c37cae4e811197370c67acba01b0ea.jar" />
+        <dex dex="C:\Users\ppanula\StudioProjects\FaceLaugh\faceLaugh\build\intermediates\pre-dexed\release\android-support-v4-4452c79eb8c37cae4e811197370c67acba01b0ea.jar" />
+    </item>
+    <item
+        jar="C:\Users\ppanula\StudioProjects\FaceLaugh\faceLaugh\libs\libGoogleAnalyticsServices.jar"
+        jumboMode="false"
+        revision="23.0.0"
+        sha1="e887c6c9b31b39a39b0eaba981448b78902ea813">
+        <dex dex="C:\Users\ppanula\StudioProjects\FaceLaugh\faceLaugh\build\intermediates\pre-dexed\release\libGoogleAnalyticsServices-d6d599cfcdb1445c1d15871a46c0f46729d3b1a8.jar" />
     </item>
     <item
         jar="C:\Users\ppanula\StudioProjects\FaceLaugh\faceLaugh\build\intermediates\exploded-aar\FaceLaugh\googleplayservices_lib\unspecified\jars\classes.jar"
         jumboMode="false"
         revision="23.0.0"
-        sha1="849230927361d4ed7876018079435b1d88ef9c21">
-        <dex dex="C:\Users\ppanula\StudioProjects\FaceLaugh\faceLaugh\build\intermediates\pre-dexed\debug\classes-cee2b77fc49b87da4c5f959212d3e41748fd2c73.jar" />
+        sha1="d8b4f5132b4f4a8064954d163bfd81a67eb80de0">
+        <dex dex="C:\Users\ppanula\StudioProjects\FaceLaugh\faceLaugh\build\intermediates\pre-dexed\release\classes-cee2b77fc49b87da4c5f959212d3e41748fd2c73.jar" />
+    </item>
+    <item
+        jar="C:\Users\ppanula\StudioProjects\FaceLaugh\faceLaugh\build\intermediates\exploded-aar\FaceLaugh\androidsupportv7appcompat\unspecified\jars\classes.jar"
+        jumboMode="false"
+        revision="23.0.0"
+        sha1="ca5d1c9d9583a1cff24bdc2d3acb74af7942ec0a">
+        <dex dex="C:\Users\ppanula\StudioProjects\FaceLaugh\faceLaugh\build\intermediates\pre-dexed\release\classes-ebd03c1dc4d6e5d8e6cc192ec41a368d4aeba5a9.jar" />
     </item>
 
 </items>

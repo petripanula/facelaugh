@@ -1,3 +1,4 @@
+//package - This is like a direcory in file explorer....
 package com.babylaugh;
 
 import java.util.Random;
@@ -47,9 +48,18 @@ import com.google.android.gms.games.Games;
 import com.google.android.gms.games.Player;
 import com.google.example.games.basegameutils.BaseGameActivity;
 
+
+//Inheritance (extends)
+   // This gives BabyMain all the same fields and methods as BaseGameActivity, yet allows its code to focus exclusively on the features that make it unique.
+
+//Interface (implements) -->
+    // The compiler will now require that methods
+    //  NumberPicker: onValueChange, RateMeMaybe: handlePositive, handleNeutral, handleNegative , and RatingStarted
+    // all be implemented. Compilation will fail if those
+    // methods are missing from this class.
+
 public class BabyMain extends BaseGameActivity implements NumberPicker.OnValueChangeListener,RateMeMaybe.OnRMMUserChoiceListener {
 
-	
 	private MediaPlayer mp;
 	
 	private EasyTracker easyTracker = null;
@@ -126,10 +136,13 @@ public class BabyMain extends BaseGameActivity implements NumberPicker.OnValueCh
     // The helper object
     IabHelper mHelper;
 
-    
+    //onCreate(Bundle) is where you initialize your activity. Most importantly, here you will usually call setContentView(int) with a layout resource defining your UI,
     @Override
     protected void onCreate(Bundle savedInstanceState) {
     	requestWindowFeature(Window.FEATURE_NO_TITLE);
+        //super is java's keyword. it refers the immediate paren't property.
+        //super()//refers parent's constructor
+        //super.onCreate();//refers to the parent's method
         super.onCreate(savedInstanceState);
 
 		getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
@@ -241,7 +254,7 @@ public class BabyMain extends BaseGameActivity implements NumberPicker.OnValueCh
 
                         break;
                     case 1:
-                        if (ENABLE_LOGS) Log.v("Pete", "spinner - clicked sleeper");
+                        if (ENABLE_LOGS) Log.v("Pete", "spinner - clicked music box");
                         Gametype = 1;
                         saveData();
                         findViewById(R.id.StartButton).setVisibility(View.VISIBLE);
@@ -1194,7 +1207,6 @@ public class BabyMain extends BaseGameActivity implements NumberPicker.OnValueCh
        // turn off screen
 	   if(ENABLE_LOGS) Log.d ("Pete", "turnOffScreen...");
 	   getWindow().clearFlags(android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-
   }
    
    public void SetSleeperTimer(int startfromthis_ms) {
@@ -1315,7 +1327,7 @@ public class BabyMain extends BaseGameActivity implements NumberPicker.OnValueCh
 	   if (mp != null) {
 		   if(ENABLE_LOGS) Log.d(TAG, "onPause() - mp.release()");
 	      mp.release();
-	      mp = null;
+           mp = null;
 	   }
        
        OnPause = true;
