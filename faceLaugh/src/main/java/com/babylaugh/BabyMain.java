@@ -61,6 +61,7 @@ import com.google.example.games.basegameutils.BaseGameActivity;
 public class BabyMain extends BaseGameActivity implements NumberPicker.OnValueChangeListener,RateMeMaybe.OnRMMUserChoiceListener {
 
 	private MediaPlayer mp;
+    private MediaPlayer mp_click;
 	
 	private EasyTracker easyTracker = null;
 	
@@ -148,7 +149,9 @@ public class BabyMain extends BaseGameActivity implements NumberPicker.OnValueCh
 		getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-		
+
+        mp_click = MediaPlayer.create(this, R.raw.click);
+
         //requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
             WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -194,7 +197,7 @@ public class BabyMain extends BaseGameActivity implements NumberPicker.OnValueCh
         if(ENABLE_LOGS) Log.d(TAG, "Starting setup.");
         mHelper.startSetup(new IabHelper.OnIabSetupFinishedListener() {
             public void onIabSetupFinished(IabResult result) {
-                if(ENABLE_LOGS) Log.d(TAG, "Setup finished.");
+                if (ENABLE_LOGS) Log.d(TAG, "Setup finished.");
 
                 if (!result.isSuccess()) {
                     // Oh noes, there was a problem.
@@ -206,7 +209,7 @@ public class BabyMain extends BaseGameActivity implements NumberPicker.OnValueCh
                 if (mHelper == null) return;
 
                 // IAB is fully set up. Now, let's get an inventory of stuff we own.
-                if(ENABLE_LOGS) Log.d(TAG, "Setup successful. Querying inventory.");
+                if (ENABLE_LOGS) Log.d(TAG, "Setup successful. Querying inventory.");
                 mHelper.queryInventoryAsync(mGotInventoryListener);
             }
         });
@@ -216,7 +219,6 @@ public class BabyMain extends BaseGameActivity implements NumberPicker.OnValueCh
 		Spinner GameTypeSpinner = (Spinner) findViewById(R.id.game_type_spinner);
 		GameTypeSpinner.setAdapter(new MyAdapterGameType(this, R.layout.my_spinner, GameTypeValues));
 		GameTypeSpinner.setSelection(Gametype);
-
 		GameTypeSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
 
             @Override
@@ -238,6 +240,7 @@ public class BabyMain extends BaseGameActivity implements NumberPicker.OnValueCh
                 switch (position) {
                     case 0:
                         if (ENABLE_LOGS) Log.v("Pete", "spinner - clicked touch");
+                        PlayClick();
                         Gametype = 0;
                         saveData();
                         findViewById(R.id.StartButton).setVisibility(View.GONE);
@@ -255,6 +258,7 @@ public class BabyMain extends BaseGameActivity implements NumberPicker.OnValueCh
                         break;
                     case 1:
                         if (ENABLE_LOGS) Log.v("Pete", "spinner - clicked music box");
+                        PlayClick();
                         Gametype = 1;
                         saveData();
                         findViewById(R.id.StartButton).setVisibility(View.VISIBLE);
@@ -308,12 +312,14 @@ public class BabyMain extends BaseGameActivity implements NumberPicker.OnValueCh
                 switch(position) {
                     case 0:
                         if(ENABLE_LOGS) Log.v("Pete", "spinner - clicked laughs");
+                        PlayClick();
                         Soundtype = 0;
                         saveData();
 
                         break;
                     case 1:
                         if(ENABLE_LOGS) Log.v("Pete", "spinner - clicked rings");
+                        PlayClick();
                         Soundtype = 1;
                         saveData();
 
@@ -1086,6 +1092,7 @@ public class BabyMain extends BaseGameActivity implements NumberPicker.OnValueCh
    //@Override
    public void onSignOutButtonClicked(View view) {
    	if(ENABLE_LOGS) Log.d("Pete", "In onSignOutButtonClicked...");
+
    	MyisSignedIn = false;
    	
    	if(isSignedIn()){
@@ -1232,6 +1239,7 @@ public class BabyMain extends BaseGameActivity implements NumberPicker.OnValueCh
    @Override
    public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
 
+        PlayClick();
 		TimeToRunSleeper_tmp = newVal;
 		if(ENABLE_LOGS) Log.v("Pete", "onValueChange - newVal: " + newVal);
 		if(ENABLE_LOGS) Log.v("Pete", "onValueChange - oldVal: " + oldVal);
@@ -1239,6 +1247,7 @@ public class BabyMain extends BaseGameActivity implements NumberPicker.OnValueCh
 
    public void show(View arg0)
    {
+        PlayClick();
         final Dialog d;
         TimeToRunSleeper_tmp = TimeToRunSleeper;
         d = new Dialog(BabyMain.this);
@@ -1256,6 +1265,7 @@ public class BabyMain extends BaseGameActivity implements NumberPicker.OnValueCh
         {
          @Override
          public void onClick(View v) {
+             PlayClick();
         	 TimeToRunSleeper = TimeToRunSleeper_tmp;
         	 saveData();
              d.dismiss();
@@ -1265,6 +1275,7 @@ public class BabyMain extends BaseGameActivity implements NumberPicker.OnValueCh
         {
          @Override
          public void onClick(View v) {
+             PlayClick();
              d.dismiss(); // dismiss the dialog
           }    
          });
@@ -1293,6 +1304,14 @@ public class BabyMain extends BaseGameActivity implements NumberPicker.OnValueCh
         Toast.makeText(this, "RatingStarted", Toast.LENGTH_SHORT).show();
         easyTracker.send(MapBuilder.createEvent("RatingStarted", "rating", "5", null).build());
 
+    }
+
+    public void PlayClick() {
+
+        if (mp_click.isPlaying()){
+            mp_click.seekTo(0);
+        }
+        mp_click.start();
     }
    
    @Override
@@ -1326,10 +1345,10 @@ public class BabyMain extends BaseGameActivity implements NumberPicker.OnValueCh
 	   // Release any resources from previous MediaPlayer
 	   if (mp != null) {
 		   if(ENABLE_LOGS) Log.d(TAG, "onPause() - mp.release()");
-	      mp.release();
+	       mp.release();
            mp = null;
 	   }
-       
+
        OnPause = true;
        saveData();
    }
@@ -1377,7 +1396,7 @@ public class BabyMain extends BaseGameActivity implements NumberPicker.OnValueCh
 	      mp.release();
 	      mp = null;
 	   }
-	   
+
        // very important:
        if(ENABLE_LOGS) Log.d(TAG, "Destroying helper.");
        if (mHelper != null) {

@@ -6,5 +6,6 @@
     android:layout_alignParentLeft="true"
     android:layout_alignParentRight="true"
     android:gravity="center"
+    android:padding="10sp"
     android:textColor="#FFFFFF"
     android:textSize="20sp"/>
