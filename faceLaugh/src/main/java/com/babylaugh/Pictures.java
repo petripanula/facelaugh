@@ -1,5 +1,6 @@
 package com.babylaugh;
 
+
 import com.facelaugh.R;
 
 public class Pictures {
@@ -38,19 +39,19 @@ public class Pictures {
 	};
 	
 	public static final int[] SMILEY_IDS = {
-			R.drawable.baby_smile,
-			R.drawable.baby_smile,
+			R.drawable.baby_smile1,
+			R.drawable.baby_smile1,
 			R.drawable.baby_smile2,
 			R.drawable.baby_smile3,
 			R.drawable.baby_smile4,
 			R.drawable.baby_smile5,
-			R.drawable.baby_smile_amused,
 			R.drawable.baby_smile6,
 			R.drawable.baby_smile7,
 			R.drawable.baby_smile8,
 			R.drawable.baby_smile9,
 			R.drawable.baby_smile10,
 			R.drawable.baby_smile11,
+			R.drawable.baby_smile12,
 	};
 	
 	public static final int[] SOUND_IDS = {
@@ -95,6 +96,45 @@ public class Pictures {
 	public static final int[] SOUND_CRY_IDS = {
 			R.raw.baby_crying,
 			R.raw.baby_crying,
+	};
+
+	public static final int[] MEMORY_IDS = {
+			R.drawable.baby_smile1,
+			R.drawable.baby_smile1,
+			R.drawable.baby_smile2,
+			R.drawable.baby_smile2,
+			R.drawable.baby_smile3,
+			R.drawable.baby_smile3,
+			R.drawable.baby_smile4,
+			R.drawable.baby_smile4,
+			R.drawable.baby_smile5,
+			R.drawable.baby_smile5,
+			R.drawable.baby_smile6,
+			R.drawable.baby_smile6,
+			R.drawable.baby_smile7,
+			R.drawable.baby_smile7,
+			R.drawable.baby_smile8,
+			R.drawable.baby_smile8,
+			R.drawable.baby_smile9,
+			R.drawable.baby_smile9,
+			R.drawable.baby_smile10,
+			R.drawable.baby_smile10,
+			R.drawable.baby_smile11,
+			R.drawable.baby_smile11,
+			R.drawable.baby_smile12,
+			R.drawable.baby_smile12,
+			R.drawable.baby_smile13,
+			R.drawable.baby_smile13,
+			R.drawable.baby_smile14,
+			R.drawable.baby_smile14,
+			R.drawable.baby_smile15,
+			R.drawable.baby_smile15,
+			R.drawable.baby_smile16,
+			R.drawable.baby_smile16,
+			R.drawable.baby_smile17,
+			R.drawable.baby_smile17,
+			R.drawable.baby_smile18,
+			R.drawable.baby_smile18,
 	};
 	
 	

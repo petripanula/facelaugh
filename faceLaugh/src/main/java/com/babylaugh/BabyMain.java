@@ -70,8 +70,10 @@ public class BabyMain extends BaseGameActivity implements NumberPicker.OnValueCh
 	long myRemainingTime = 0;
 			
 	//public static final String GAME_SAVINGS = "GAME_SAVINGS";
-	
-	String[] GameTypeValues = { "Touch Mode", "Music Box Mode"};
+
+    Spinner GameTypeSpinner;
+
+	String[] GameTypeValues = { "Touch Mode", "Music Box Mode", "Memory Mode"};
     String[] SoundTypeValues = { "Laugh sounds", "Ring Sounds"};
 
 	String PlayerName="NoName";
@@ -131,7 +133,9 @@ public class BabyMain extends BaseGameActivity implements NumberPicker.OnValueCh
     int FreeSleeperRunningtime;
     
     int InfiniteLaughsBought = 0;
-    
+
+    static int NbrOfPictures;
+
     int TimeToRunSleeper,TimeToRunSleeper_tmp;
     
     // The helper object
@@ -150,13 +154,14 @@ public class BabyMain extends BaseGameActivity implements NumberPicker.OnValueCh
 		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
-        mp_click = MediaPlayer.create(this, R.raw.click);
 
         //requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
             WindowManager.LayoutParams.FLAG_FULLSCREEN);
                 
         setContentView(R.layout.activity_baby_main);
+
+        mp_click = MediaPlayer.create(this, R.raw.click);
 
         easyTracker = EasyTracker.getInstance(BabyMain.this);
         
@@ -216,7 +221,7 @@ public class BabyMain extends BaseGameActivity implements NumberPicker.OnValueCh
 
         addButtonListener();
         
-		Spinner GameTypeSpinner = (Spinner) findViewById(R.id.game_type_spinner);
+		GameTypeSpinner = (Spinner) findViewById(R.id.game_type_spinner);
 		GameTypeSpinner.setAdapter(new MyAdapterGameType(this, R.layout.my_spinner, GameTypeValues));
 		GameTypeSpinner.setSelection(Gametype);
 		GameTypeSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
@@ -273,6 +278,9 @@ public class BabyMain extends BaseGameActivity implements NumberPicker.OnValueCh
                         else
                             updateUiDefault();
 
+                        break;
+                    case 2:
+                        OpenMemoryGameActivity();
                         break;
                     default:
                         if (ENABLE_LOGS)
@@ -433,7 +441,7 @@ public class BabyMain extends BaseGameActivity implements NumberPicker.OnValueCh
     	int PicNumberWaidth = (int) ( windowWidth/1.2);
     	int PicNumberHeight = windowHeight/2;
     	
-     if(laughs >= LAUGHS_MAX && Gametype==0) {
+        if(laughs >= LAUGHS_MAX && Gametype==0) {
             thistypelocked = true;
 
             if(!mSubscribedToInfiniteLaugh)
@@ -718,12 +726,15 @@ public class BabyMain extends BaseGameActivity implements NumberPicker.OnValueCh
        spe.putInt("Soundtype", Soundtype);
        spe.putInt("FreeSleeperRunningtime", FreeSleeperRunningtime);
        spe.putInt("TimeToRunSleeper", TimeToRunSleeper);
+       spe.putInt("NbrOfPictures", NbrOfPictures);
        //spe.commit();
 	   spe.apply();
        if(ENABLE_LOGS) Log.d("Pete", "Saved data: laughs = " + String.valueOf(laughs));
        if(ENABLE_LOGS) Log.d("Pete", "Saved data: test = " + String.valueOf(InfiniteLaughsBought));
        if(ENABLE_LOGS) Log.d("Pete", "Saved data: Gametype = " + String.valueOf(Gametype));
        if(ENABLE_LOGS) Log.d("Pete", "Saved data: FreeSleeperRunningtime = " + String.valueOf(FreeSleeperRunningtime));
+
+
    }
 
    void loadData() {
@@ -732,6 +743,11 @@ public class BabyMain extends BaseGameActivity implements NumberPicker.OnValueCh
        InfiniteLaughsBought = sp.getInt("test", 0);
        Gametype = sp.getInt("Gametype", 0);
        Soundtype = sp.getInt("Soundtype", 0);
+       NbrOfPictures = sp.getInt("NbrOfPictures", 4);
+
+       //Just making sure....
+       if(NbrOfPictures<4) NbrOfPictures=4;
+
        FreeSleeperRunningtime = sp.getInt("FreeSleeperRunningtime", 60);     
        TimeToRunSleeper = sp.getInt("TimeToRunSleeper", 5);
        
@@ -904,8 +920,15 @@ public class BabyMain extends BaseGameActivity implements NumberPicker.OnValueCh
 	   SetSleeperTimer(TimeToRunSleeper);
 	   updateUi(false);
 	   
-	   easyTracker.send(MapBuilder.createEvent("StartButtonClicked","Sleeper", "1", null).build());
+	   easyTracker.send(MapBuilder.createEvent("StartButtonClicked", "Sleeper", "1", null).build());
+
+
    }
+
+    public void OpenMemoryGameActivity() {
+        Intent intent = new Intent(this, MemoryGameActivity.class);
+        startActivity(intent);
+    }
    
    public void StopButtonClicked(View arg0) {
 	   if(ENABLE_LOGS) Log.d(TAG, "StopButtonClicked");
@@ -1251,7 +1274,7 @@ public class BabyMain extends BaseGameActivity implements NumberPicker.OnValueCh
         final Dialog d;
         TimeToRunSleeper_tmp = TimeToRunSleeper;
         d = new Dialog(BabyMain.this);
-        d.setTitle("Set Time For Music Box (min)");
+        d.setTitle("Set Play Time For Music Box (min)");
         d.setContentView(R.layout.dialog);
         Button b1 = (Button) d.findViewById(R.id.button1);
         Button b2 = (Button) d.findViewById(R.id.button2);
@@ -1373,6 +1396,9 @@ public class BabyMain extends BaseGameActivity implements NumberPicker.OnValueCh
     	   findViewById(R.id.StopButton).setVisibility(View.GONE);
     	   findViewById(R.id.ConsumedLaughs).setVisibility(View.VISIBLE);   	   
        }
+
+       GameTypeSpinner = (Spinner) findViewById(R.id.game_type_spinner);
+       GameTypeSpinner.setSelection(Gametype);
    }
    
    // We're being destroyed. It's important to dispose of the helper here!

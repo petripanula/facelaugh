@@ -3,31 +3,33 @@
     package="com.facelaugh"
     android:versionCode="15"
     android:versionName="1.8" >
-    
-    <supports-screens android:smallScreens="true"
-                      android:normalScreens="true"
-                      android:largeScreens="true"
-                      android:xlargeScreens="true" />
-    
-	<uses-permission android:name="com.android.vending.BILLING" />
-	<uses-permission android:name="android.permission.INTERNET"/>
-  	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-	
+
     <uses-sdk
         android:minSdkVersion="11"
         android:targetSdkVersion="19" />
+
+    <supports-screens
+        android:largeScreens="true"
+        android:normalScreens="true"
+        android:smallScreens="true"
+        android:xlargeScreens="true" />
+
+    <uses-permission android:name="com.android.vending.BILLING" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
-
-        <meta-data android:name="com.google.android.gms.games.APP_ID"
+        <meta-data
+            android:name="com.google.android.gms.games.APP_ID"
             android:value="@string/app_id" />
-        <meta-data android:name="com.google.android.gms.version"
-              android:value="@integer/google_play_services_version"/>
-        
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+
         <activity
             android:name="com.babylaugh.BabyMain"
             android:configChanges="orientation|keyboardHidden|screenSize"
@@ -38,6 +40,16 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name="com.babylaugh.MemoryGameActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/title_activity_memory_game"
+            android:parentActivityName="com.babylaugh.BabyMain"
+            android:theme="@style/FullscreenTheme" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.babylaugh.BabyMain" />
         </activity>
     </application>
 

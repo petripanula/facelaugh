@@ -21,7 +21,7 @@
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
        	android:layout_centerHorizontal="true"
-        android:src="@drawable/baby_smile" />
+        android:src="@drawable/baby_smile1" />
     
     <ImageButton
         android:id="@+id/BuyButton"

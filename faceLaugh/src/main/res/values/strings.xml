@@ -13,7 +13,10 @@
     <string name="mystop">Stop</string>
     <string name="signout">Sign out</string>
     <string name="settings">Settings</string>
+    <string name="restart">Restart</string>
     <string name="TimeToRun">  Minutes To Run  </string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
+
+    <string name="title_activity_memory_game">MemoryGameActivity</string>
 
 </resources>
