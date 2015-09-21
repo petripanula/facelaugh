@@ -31,36 +31,75 @@
         android:paddingRight="9dp"
         android:paddingTop="5dp" >
 
-        <Button
+        <ImageButton
             android:id="@+id/settings"
+            android:layout_weight="1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom|center"
-            android:background="@drawable/button_first_page"
-            android:textSize="16sp"
-            android:textColor="#FFFFFFFF"
+            android:layout_gravity="bottom"
+            android:background="@drawable/button_memory_page"
             android:layout_marginBottom="5dip"
             android:onClick="show"
+            android:paddingBottom="5dip"
+            android:paddingTop="5dip"
             android:layout_marginLeft="5dip"
             android:layout_marginRight="5dip"
-            android:text="@string/settings"
+            android:scaleType="fitCenter"
+            android:src="@drawable/settings"
         />
 
-        <Button
+        <ImageButton
             android:id="@+id/restart"
+            android:layout_weight="1"
             android:layout_toLeftOf="@+id/settings"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom|center"
-            android:background="@drawable/button_first_page"
-            android:textSize="16sp"
-            android:textColor="#FFFFFFFF"
+            android:layout_gravity="bottom"
+            android:background="@drawable/button_memory_page"
+            android:paddingBottom="5dip"
+            android:paddingTop="5dip"
+            android:scaleType="fitCenter"
             android:layout_marginBottom="5dip"
             android:layout_marginLeft="5dip"
             android:layout_marginRight="5dip"
             android:onClick="Restart"
-            android:text="@string/restart"
+            android:src="@drawable/restart"
         />
+        <ImageButton
+            android:id="@+id/mode"
+            android:layout_weight="1"
+            android:layout_toLeftOf="@+id/restart"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:background="@drawable/button_memory_page"
+            android:paddingBottom="5dip"
+            android:paddingTop="5dip"
+            android:scaleType="fitCenter"
+            android:layout_marginBottom="5dip"
+            android:layout_marginLeft="5dip"
+            android:layout_marginRight="5dip"
+            android:onClick="Mode"
+            android:src="@drawable/baby"
+            />
+
+        <ImageButton
+            android:id="@+id/achievements"
+            android:layout_weight="1"
+            android:layout_toLeftOf="@+id/mode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:background="@drawable/button_memory_page"
+            android:paddingBottom="5dip"
+            android:paddingTop="5dip"
+            android:scaleType="fitCenter"
+            android:layout_marginBottom="5dip"
+            android:layout_marginLeft="5dip"
+            android:layout_marginRight="5dip"
+            android:onClick="onShowAchievementsRequested"
+            android:src="@drawable/achievements"
+            />
 
     </LinearLayout>
 

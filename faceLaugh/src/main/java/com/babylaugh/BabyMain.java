@@ -134,8 +134,6 @@ public class BabyMain extends BaseGameActivity implements NumberPicker.OnValueCh
     
     int InfiniteLaughsBought = 0;
 
-    static int NbrOfPictures;
-
     int TimeToRunSleeper,TimeToRunSleeper_tmp;
     
     // The helper object
@@ -726,7 +724,6 @@ public class BabyMain extends BaseGameActivity implements NumberPicker.OnValueCh
        spe.putInt("Soundtype", Soundtype);
        spe.putInt("FreeSleeperRunningtime", FreeSleeperRunningtime);
        spe.putInt("TimeToRunSleeper", TimeToRunSleeper);
-       spe.putInt("NbrOfPictures", NbrOfPictures);
        //spe.commit();
 	   spe.apply();
        if(ENABLE_LOGS) Log.d("Pete", "Saved data: laughs = " + String.valueOf(laughs));
@@ -743,10 +740,6 @@ public class BabyMain extends BaseGameActivity implements NumberPicker.OnValueCh
        InfiniteLaughsBought = sp.getInt("test", 0);
        Gametype = sp.getInt("Gametype", 0);
        Soundtype = sp.getInt("Soundtype", 0);
-       NbrOfPictures = sp.getInt("NbrOfPictures", 4);
-
-       //Just making sure....
-       if(NbrOfPictures<4) NbrOfPictures=4;
 
        FreeSleeperRunningtime = sp.getInt("FreeSleeperRunningtime", 60);     
        TimeToRunSleeper = sp.getInt("TimeToRunSleeper", 5);

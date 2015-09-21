@@ -98,6 +98,11 @@ public class Pictures {
 			R.raw.baby_crying,
 	};
 
+	public static final int[] IMAGEBUTTON_IDS = {
+			R.drawable.baby2,
+			R.drawable.adult,
+	};
+
 	public static final int[] MEMORY_IDS = {
 			R.drawable.baby_smile1,
 			R.drawable.baby_smile1,

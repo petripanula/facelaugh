@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     
-    <!-- TODO: Replace this by your app's app ID! -->
-    <string name="app_id">429469227423</string>
-
     <string name="app_name">FaceLaugh</string>
     <string name="select_game_type">Game Type</string>
     <string name="select_sound_type">Sound Type</string>
@@ -16,7 +13,11 @@
     <string name="restart">Restart</string>
     <string name="TimeToRun">  Minutes To Run  </string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
-
+    <string name="achievements_not_available">Log in to see achievements...</string>
+    <string name="achievements_not_available_child">Achievements not available in Child Mode!</string>
+    <string name="level_not_available">Level Not Available - you have pass previous levels first!!</string>
+    <string name="achievement">Achievement</string>
+    <string name="level_achievement_reached">Memory Level Passed!!</string>
     <string name="title_activity_memory_game">MemoryGameActivity</string>
 
 </resources>

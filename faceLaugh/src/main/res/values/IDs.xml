@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_id">429469227423</string>
+    <string name="achievement_memory_with_4_pictures">CgkIn7Px8r8MEAIQAQ</string>
+    <string name="achievement_memory_with_6_pictures">CgkIn7Px8r8MEAIQAg</string>
+    <string name="achievement_memory_with_8_pictures">CgkIn7Px8r8MEAIQAw</string>
+    <string name="achievement_memory_with_12_pictures">CgkIn7Px8r8MEAIQBA</string>
+    <string name="achievement_memory_with_16_pictures">CgkIn7Px8r8MEAIQBQ</string>
+    <string name="achievement_memory_with_20_pictures">CgkIn7Px8r8MEAIQBw</string>
+    <string name="achievement_memory_with_24_pictures">CgkIn7Px8r8MEAIQCA</string>
+    <string name="achievement_memory_with_30_pictures">CgkIn7Px8r8MEAIQCQ</string>
+    <string name="achievement_memory_with_36_pictures">CgkIn7Px8r8MEAIQCg</string>
+</resources>
