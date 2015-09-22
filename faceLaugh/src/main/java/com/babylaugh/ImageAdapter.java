@@ -11,7 +11,6 @@ import android.widget.ImageView;
 import android.widget.GridView;
 import android.widget.Toast;
 
-
 /**
  * Created by ppanula on 15.9.2015.
  */
@@ -26,6 +25,7 @@ public class ImageAdapter extends BaseAdapter {
         pics = pictures;
         picture_size = pic_size;
     }
+
 
     //Number of elemens show in gridview...
     public int getCount() {
@@ -48,7 +48,6 @@ public class ImageAdapter extends BaseAdapter {
         int in;
 
         if(BabyMain.ENABLE_LOGS) Log.d(BabyMain.TAG, "public View getView. position: " + position);
-        //Log.d(BabyMain.TAG, "public View getView. position: " + position);
 
         ImageView imageView;
         if (convertView == null) {
@@ -59,7 +58,8 @@ public class ImageAdapter extends BaseAdapter {
             imageView.setPadding(8, 8, 8, 8);
 
             //MUN...  baby_smile
-            newString = imageView.getResources().getResourceEntryName(Pictures.MEMORY_IDS[position]);
+            //newString = imageView.getResources().getResourceEntryName(Pictures.MEMORY_IDS[position]);
+            newString = imageView.getResources().getResourceEntryName(MemoryGameActivity.NewArray[position]);
             newString = newString.replace("baby_smile", "");
             //in = Integer.valueOf(newString);
 
@@ -79,13 +79,14 @@ public class ImageAdapter extends BaseAdapter {
 
         //Log.d(BabyMain.TAG, "getResources().getResourceEntryName: " + imageView.getResources().getResourceEntryName(Pictures.MEMORY_IDS[position]));
 
-        imageView.setImageResource(Pictures.MEMORY_IDS[position]);
+        imageView.setImageResource(MemoryGameActivity.NewArray[position]);
         int color = Color.parseColor("#FFFFFF");
         imageView.setColorFilter(color);
 
 
         return imageView;
     }
+
 
     /*
     // references to our images

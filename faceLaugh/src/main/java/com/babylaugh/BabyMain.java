@@ -100,8 +100,8 @@ public class BabyMain extends BaseGameActivity implements NumberPicker.OnValueCh
     // Does the user have the premium upgrade?
     boolean mIsPremium = false;
 
-    // Does the user have an active subscription to the infinite gas plan?
-    boolean mSubscribedToInfiniteLaugh = false;
+    // Does the user have an active subscription to the infinite laugh?
+    public static boolean mSubscribedToInfiniteLaugh = false;
 
     // SKUs for our products: the premium upgrade (non-consumable) and gas (consumable)
     static final String SKU_PREMIUM = "premium";
@@ -138,6 +138,8 @@ public class BabyMain extends BaseGameActivity implements NumberPicker.OnValueCh
     
     // The helper object
     IabHelper mHelper;
+
+    public static Boolean WantToBuy = false;
 
     //onCreate(Bundle) is where you initialize your activity. Most importantly, here you will usually call setContentView(int) with a layout resource defining your UI,
     @Override
@@ -940,19 +942,19 @@ public class BabyMain extends BaseGameActivity implements NumberPicker.OnValueCh
        if(MyCountDownTimer!=null)
 		  MyCountDownTimer.cancel();
    }
-   
-   public void onInfiniteLaughButtonClicked(View arg0) {
-	   
-	   Toast.makeText(BabyMain.this,"onInfiniteGasButtonClicked", Toast.LENGTH_SHORT).show();
-	   
+
+   public void  InfiniteLaughButtonClicked(){
+
+       Toast.makeText(this,"onInfiniteGasButtonClicked", Toast.LENGTH_SHORT).show();
+
        if (!mHelper.subscriptionsSupported()) {
            complain("Subscriptions not supported on your device yet. Sorry!");
            return;
        }
-              
+
        if (mSubscribedToInfiniteLaugh) {
-    	   Toast.makeText(BabyMain.this,"Allready owned " + SKU_INFINITE_LAUGH, Toast.LENGTH_SHORT).show();
-    	   return;
+           Toast.makeText(this,"Allready owned " + SKU_INFINITE_LAUGH, Toast.LENGTH_SHORT).show();
+           return;
        }
 
        /* TO-DO: for security, generate your payload here for verification. See the comments on
@@ -969,6 +971,11 @@ public class BabyMain extends BaseGameActivity implements NumberPicker.OnValueCh
        mHelper.launchPurchaseFlow(this,
                SKU_INFINITE_LAUGH, IabHelper.ITEM_TYPE_INAPP,
                RC_REQUEST, mPurchaseFinishedListener, payload);
+
+   }
+   
+   public void onInfiniteLaughButtonClicked(View arg0) {
+       InfiniteLaughButtonClicked();
    }
    
    @Override
@@ -1368,6 +1375,10 @@ public class BabyMain extends BaseGameActivity implements NumberPicker.OnValueCh
        OnPause = true;
        saveData();
    }
+
+    public static void SetBuyInWanted(){
+        WantToBuy = true;
+    }
    
    @Override
    public void onResume() {
@@ -1392,6 +1403,12 @@ public class BabyMain extends BaseGameActivity implements NumberPicker.OnValueCh
 
        GameTypeSpinner = (Spinner) findViewById(R.id.game_type_spinner);
        GameTypeSpinner.setSelection(Gametype);
+
+       if(WantToBuy){
+           InfiniteLaughButtonClicked();
+           WantToBuy = false;
+       }
+
    }
    
    // We're being destroyed. It's important to dispose of the helper here!

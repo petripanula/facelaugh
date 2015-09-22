@@ -5,22 +5,30 @@ import com.google.android.gms.games.Games;
 import com.google.android.gms.games.Player;
 import com.google.example.games.basegameutils.BaseGameActivity;
 
+import android.app.ActionBar.LayoutParams;
+
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Point;
+import android.graphics.Typeface;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.Display;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -31,10 +39,11 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.NumberPicker;
-import android.widget.RelativeLayout;
-import android.widget.Spinner;
+import android.widget.PopupWindow;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.Arrays;
 import java.util.Random;
 
 import static java.lang.Math.sqrt;
@@ -58,8 +67,13 @@ public class MemoryGameActivity extends BaseGameActivity implements NumberPicker
     String PlayerName="NoName";
     int child_mode;
     String[] AchievementString = new String[9];
-
+    public static int[] NewArray;
+    public static int[][] SeenPictures;
     SecurePreferences preferences;
+    public static Boolean ShouldKnowNow=false;
+    public static Boolean GameOver=false;
+    public static int KnownID = -1;
+    public static int KnownPos = -1;
 
     public static boolean[] AchievementOnServer = new boolean[9];
     public static boolean[] Achievement = new boolean[9];
@@ -67,18 +81,21 @@ public class MemoryGameActivity extends BaseGameActivity implements NumberPicker
     public static boolean AchievementSent = false;
     public static int MemoryLevel = -1;
     // request codes we use when invoking an external activity
-    final int RC_RESOLVE = 5000, RC_UNUSED = 5001;
+    final int RC_UNUSED = 5001;
+
+    public static final boolean ENABLE_MEM_LOGS = true;
+
+    PopupWindow popupWindow;
+    public String[] MyStringBuffer;
+
+    //BabyMain BabyMainActivity = new BabyMain();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         super.onCreate(savedInstanceState);
 
-        loadData();
-        SetStringsArrays();
-        loadLocal();
-
-        AllowedValues = new String[9];
+        AllowedValues = new String[10];
         AllowedValues[0] = "4";
         AllowedValues[1] = "6";
         AllowedValues[2] = "8";
@@ -88,19 +105,43 @@ public class MemoryGameActivity extends BaseGameActivity implements NumberPicker
         AllowedValues[6] = "24";
         AllowedValues[7] = "30";
         AllowedValues[8] = "36";
+        AllowedValues[9] = "42";
+
+        DefaultValue = 0;
+        DefaultValue_tmp = 0;
+
+        loadData();
+        SetStringsArrays();
+        loadLocal();
+        CheckHighestLevel();
+
+
+        int TableIndex = Pictures.MEMORY_IDS_TEST.length*2+1;
+        /// Array to test if picture is seen or not...
+        SeenPictures = new int[TableIndex][TableIndex];
+
+        //And Init for it...
+        for(int i=0; i<TableIndex; i++) {
+            for(int m=0; m<TableIndex; m++) {
+                SeenPictures[i][m]=0;
+            }
+        }
 
         Random random_pic = new Random();
 
         for(int l=0; l<AllowedValues.length; l++) {
-            //Log.v("Pete", "Integer.valueOf(AllowedValues[l]): " + Integer.valueOf(AllowedValues[l]));
+            //if (ENABLE_MEM_LOGS) Log.d("Pete", "Integer.valueOf(AllowedValues[l]): " + Integer.valueOf(AllowedValues[l]));
 
             if (Integer.valueOf(AllowedValues[l]) == NbrOfPictures){
-                //Log.v("Pete", "BabyMain.NbrOfPictures: " + BabyMain.NbrOfPictures);
+                //if (ENABLE_MEM_LOGS) Log.d("Pete", "BabyMain.NbrOfPictures: " + BabyMain.NbrOfPictures);
                 DefaultValue = l;
+                DefaultValue_tmp = DefaultValue + 1;
                 MemoryLevel = l;
                 break;
              }
         }
+
+        NbrOfPictures_tmp = NbrOfPictures;
 
         mp_click = MediaPlayer.create(this, R.raw.click);
         mp_fan = MediaPlayer.create(this, R.raw.fanfare);
@@ -109,6 +150,8 @@ public class MemoryGameActivity extends BaseGameActivity implements NumberPicker
         SamePictures = 0;
         oldposition = -1;
         OpenPictures = 0;
+        GameOver = false;
+        ShouldKnowNow=false;
 
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
@@ -117,7 +160,6 @@ public class MemoryGameActivity extends BaseGameActivity implements NumberPicker
 
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
-
 
         int nbr_of_pictures = Pictures.BACKGROUND_IDS.length;
         int random_range = nbr_of_pictures - 1;
@@ -140,42 +182,59 @@ public class MemoryGameActivity extends BaseGameActivity implements NumberPicker
         //How this should be calculated (weigth 7, weight 1)
         int HeightOfGridArea = windowHeight*6/7;
 
-        Log.v("Pete", "windowWidth: " + windowWidth);
-        Log.v("Pete", "windowHeight: " + windowHeight);
-        Log.v("Pete", "HeightOfGridArea: " + HeightOfGridArea);
+        if (ENABLE_MEM_LOGS) Log.d("Pete", "windowWidth: " + windowWidth);
+        if (ENABLE_MEM_LOGS) Log.d("Pete", "windowHeight: " + windowHeight);
+        if (ENABLE_MEM_LOGS) Log.d("Pete", "HeightOfGridArea: " + HeightOfGridArea);
 
         gridview.setNumColumns(sizeofcubeside);
 
         int NbrOfVerticalPictures = NbrOfPictures/sizeofcubeside;
         int TotalPadding = 16*NbrOfVerticalPictures;
-        Log.v("Pete", "NbrOfVerticalPictures: " + NbrOfVerticalPictures);
-        Log.v("Pete", "TotalPadding: " + TotalPadding);
+        if (ENABLE_MEM_LOGS) Log.d("Pete", "NbrOfVerticalPictures: " + NbrOfVerticalPictures);
+        if (ENABLE_MEM_LOGS) Log.d("Pete", "TotalPadding: " + TotalPadding);
 
         picturewidth = (windowWidth / sizeofcubeside);
 
-        Log.v("Pete", "picturewidth: " + picturewidth);
+        if (ENABLE_MEM_LOGS) Log.d("Pete", "picturewidth: " + picturewidth);
 
         if((NbrOfVerticalPictures*picturewidth+TotalPadding)>HeightOfGridArea) {
-            Log.v("Pete", "Pictures does't fit to Y: " + windowHeight);
+            if (ENABLE_MEM_LOGS) Log.d("Pete", "Pictures does't fit to Y: " + windowHeight);
 
             picturewidth = HeightOfGridArea/NbrOfVerticalPictures - TotalPadding;
-            Log.v("Pete", "new picturewidth: " + picturewidth);
+            if (ENABLE_MEM_LOGS) Log.d("Pete", "new picturewidth: " + picturewidth);
         }else{
             picturewidth = picturewidth - 50;
         }
+
+        ShuffleArray(Pictures.MEMORY_IDS_TEST);
+
+        NewArray = new int[NbrOfPictures];
+
+        int j=0,k=0;
+        for(int l=0; l<NbrOfPictures; l++) {
+            NewArray[l] = Pictures.MEMORY_IDS_TEST[k];
+            j++;
+            if(j==2){
+                j=0;
+                k++;
+            }
+        }
+
+        ShuffleArray(NewArray);
+
+        if (ENABLE_MEM_LOGS) Log.d("Pete", "NewArray: " + Arrays.toString(NewArray));
 
         gridview.setAdapter(new ImageAdapter(this, NbrOfPictures, picturewidth));
 
         gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v,
                                     int position, long id) {
-                //Toast.makeText(MemoryGameActivity.this, "" + position, Toast.LENGTH_SHORT).show();
-                //Toast.makeText(MemoryGameActivity.this, "" + v.getId(), Toast.LENGTH_SHORT).show();
-                //ImageView imageView;
-
-                Log.v("Pete", "onItemClick...");
+                if (ENABLE_MEM_LOGS) Log.d("Pete", "onItemClick - v.getId(): " + v.getId());
 
                 if (TimerRunning)
+                    return;
+
+                if(GameOver)
                     return;
 
                 imageView = (ImageView) v;
@@ -190,11 +249,17 @@ public class MemoryGameActivity extends BaseGameActivity implements NumberPicker
                     oldposition = position;
                     SamePictures = v.getId();
                     imageView_old = (ImageView) v;
-
                     OpenPictures++;
+
+                    SeenPictures[v.getId()][position]++;
+
+                    if(child_mode==0)
+                        CheckIfYouShouldKnowTheNext(v.getId(), position);
                 } else {
                     //Cliecked different picture than first one...
                     if (position != oldposition) {
+
+                        SeenPictures[v.getId()][position]++;
 
                         //Pictures are same
                         if (SamePictures == v.getId()) {
@@ -202,6 +267,9 @@ public class MemoryGameActivity extends BaseGameActivity implements NumberPicker
                             OpenPictures++;
                             imageView.setId(OpenPicureID);
                             imageView_old.setId(OpenPicureID);
+
+                            if(ShouldKnowNow)
+                                ShouldKnowNow=false;
                         } else {
                             PlayClick();
                             SetCountDownTimer(1500);
@@ -230,6 +298,14 @@ public class MemoryGameActivity extends BaseGameActivity implements NumberPicker
     public void Restart(View arg0){
         Toast.makeText(MemoryGameActivity.this, "Restart!!!!", Toast.LENGTH_SHORT).show();
 
+        MyStringBuffer = new String[3];
+
+        for(int i=0; i < MyStringBuffer.length; i++)
+        {
+            MyStringBuffer[i] = "Huaaa";
+        }
+
+        //ShowPopUp();
         Start();
     }
 
@@ -245,9 +321,42 @@ public class MemoryGameActivity extends BaseGameActivity implements NumberPicker
 
     }
 
-    //TODO
+    public void CheckHighestLevel(){
+
+        if(child_mode==1)
+            return;
+
+        int Index;
+        int NbrOfPictures_current;
+
+        NbrOfPictures_current = NbrOfPictures;
+
+        for (int i = AchievementString.length - 1; i >= 0; i--) {
+
+            if (Achievement[i] || AchievementOnServer[i]) {
+                if (ENABLE_MEM_LOGS) Log.d("Pete", "CheckHighestLevel - this is first level with achievement: " + i);
+                if (ENABLE_MEM_LOGS) Log.d("Pete", "CheckHighestLevel - DefaultValue: " + DefaultValue);
+                Index = i + 1;
+
+                if(Index>=AchievementString.length)
+                    Index = i;
+
+                NbrOfPictures = Integer.valueOf(AllowedValues[Index]);
+                if (ENABLE_MEM_LOGS) Log.d("Pete", "CheckHighestLevel - NbrOfPictures: " + NbrOfPictures);
+
+                if(NbrOfPictures_current<NbrOfPictures)
+                    NbrOfPictures = NbrOfPictures_current;
+
+                break;
+            }
+        }
+        saveData();
+    }
+
     public void Mode(View arg0){
         ImageButton ib = (ImageButton) findViewById(R.id.mode);
+        Boolean RestartNeeded=false;
+        int Index;
 
         if(child_mode==0) {
             child_mode=1;
@@ -258,6 +367,34 @@ public class MemoryGameActivity extends BaseGameActivity implements NumberPicker
             child_mode=0;
             ib.setImageResource(Pictures.IMAGEBUTTON_IDS[1]);
             Toast.makeText(MemoryGameActivity.this, "Child Mode DeActivated!", Toast.LENGTH_SHORT).show();
+        }
+
+        if(child_mode==0) {
+            for (int i = AchievementString.length - 1; i >= 0; i--) {
+
+                if (Achievement[i] || AchievementOnServer[i]) {
+                    if (ENABLE_MEM_LOGS) Log.d("Pete", "Mode - this is first level with achievement: " + i);
+                    if (ENABLE_MEM_LOGS) Log.d("Pete", "Mode - DefaultValue: " + DefaultValue);
+                    Index = i + 1;
+
+                    if(Index>=AchievementString.length)
+                        Index = i;
+
+                    NbrOfPictures = Integer.valueOf(AllowedValues[Index]);
+                    if (ENABLE_MEM_LOGS) Log.d("Pete", "Mode - NbrOfPictures: " + NbrOfPictures);
+
+                    if(DefaultValue>Index)
+                        RestartNeeded=true;
+
+                    break;
+                }
+
+            }
+
+            if(RestartNeeded) {
+                saveData();
+                Start();
+            }
         }
     }
 
@@ -280,17 +417,14 @@ public class MemoryGameActivity extends BaseGameActivity implements NumberPicker
     public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
 
         NbrOfPictures_tmp = Integer.valueOf(AllowedValues[newVal-1]);
-        Log.v("Pete", "onValueChange - newVal: " + newVal);
-        Log.v("Pete", "onValueChange - NbrOfPictures_tmp: " + NbrOfPictures_tmp);
+        if (ENABLE_MEM_LOGS) Log.d("Pete", "onValueChange - newVal: " + newVal);
+        if (ENABLE_MEM_LOGS) Log.d("Pete", "onValueChange - NbrOfPictures_tmp: " + NbrOfPictures_tmp);
         DefaultValue_tmp = newVal;
         PlayClick();
         //NbrOfPictures_tmp = newVal;
     }
 
-
-    //TODO only allow next level when current has been passed.....
-    public void show(View arg0)
-    {
+    public void called_show(){
         PlayClick();
         final Dialog d;
         d = new Dialog(MemoryGameActivity.this);
@@ -316,17 +450,27 @@ public class MemoryGameActivity extends BaseGameActivity implements NumberPicker
                 DefaultValue = DefaultValue_tmp - 1;
                 NbrOfPictures = NbrOfPictures_tmp;
 
+                if(DefaultValue<0)
+                    DefaultValue=0;
+
                 int Index;
                 if(DefaultValue==0)
                     Index = 0;
                 else
                     Index = DefaultValue - 1;
 
-                if(Achievement[Index] || AchievementOnServer[Index] || Index==0 || child_mode==1) {
+                if(!BabyMain.mSubscribedToInfiniteLaugh && child_mode==0 && DefaultValue>6) {
+                    //showAlert(getString(R.string.level_not_available_in_free));
                     d.dismiss();
-                    Start();
-                }else{
-                    showAlert(getString(R.string.level_not_available));
+                    ShowPopUp();
+                }else {
+
+                    if (Achievement[Index] || AchievementOnServer[Index] || Index == 0 || child_mode == 1) {
+                        d.dismiss();
+                        Start();
+                    } else {
+                        showAlert(getString(R.string.level_not_available));
+                    }
                 }
             }
         });
@@ -340,6 +484,13 @@ public class MemoryGameActivity extends BaseGameActivity implements NumberPicker
         });
         d.show();
 
+    }
+
+
+
+    public void show(View arg0)
+    {
+        called_show();
     }
 
     public void PlayClick() {
@@ -383,11 +534,34 @@ public class MemoryGameActivity extends BaseGameActivity implements NumberPicker
 
             public void onFinish() {
 
-                int color = Color.parseColor("#FFFFFF");
-                imageView.setColorFilter(color);
+                if(ShouldKnowNow){
+                    GameOver = true;
 
-                if (imageView_old != null)
-                    imageView_old.setColorFilter(color);
+
+                    //Get all childs from Gridview...
+                    GridView gv = (GridView) findViewById(R.id.gridview);
+
+                    int childcount = gv.getChildCount();
+                    for (int i=0; i < childcount; i++){
+                        View v = gv.getChildAt(i);
+                        //if (ENABLE_MEM_LOGS) Log.d("Pete", "v.getId(): " + v.getId());
+
+                        if(v.getId()==KnownID){
+                            imageView = (ImageView) v;
+                            imageView.clearColorFilter();
+
+                            imageView.setImageAlpha(100);
+                        }
+                    }
+
+                    showAlert(getString(R.string.game_over));
+                }else {
+                    int color = Color.parseColor("#FFFFFF");
+                    imageView.setColorFilter(color);
+
+                    if (imageView_old != null)
+                        imageView_old.setColorFilter(color);
+                }
 
                 TimerRunning = false;
             }
@@ -400,7 +574,7 @@ public class MemoryGameActivity extends BaseGameActivity implements NumberPicker
         child_mode = sp.getInt("child_mode", 0);
 
         if (NbrOfPictures == 0) NbrOfPictures = 4;
-        Log.d("Pete", "Loaded data: NbrOfPictures = " + String.valueOf(NbrOfPictures));
+        if (ENABLE_MEM_LOGS) Log.d("Pete", "Loaded data: NbrOfPictures = " + String.valueOf(NbrOfPictures));
 
     }
 
@@ -412,6 +586,7 @@ public class MemoryGameActivity extends BaseGameActivity implements NumberPicker
         */
         SharedPreferences.Editor spe = getPreferences(MODE_PRIVATE).edit();
         spe.putInt("NbrOfPictures", NbrOfPictures);
+        if (ENABLE_MEM_LOGS) Log.d("Pete", "saveData: NbrOfPictures = " + String.valueOf(NbrOfPictures));
         spe.putInt("child_mode", child_mode);
         //spe.commit();
         spe.apply();
@@ -442,31 +617,31 @@ public class MemoryGameActivity extends BaseGameActivity implements NumberPicker
 
     @Override
     public void onSignInFailed() {
-        Log.v("Pete", "In onSignInFailed...");
+        if (ENABLE_MEM_LOGS) Log.d("Pete", "In onSignInFailed...");
 
         MyisSignedIn = false;
 
-        Log.v("Pete", "isTaskRoot(): " + isTaskRoot());
+        if (ENABLE_MEM_LOGS) Log.d("Pete", "isTaskRoot(): " + isTaskRoot());
 
     }
 
     @Override
     public void onSignInSucceeded() {
-        Log.v("Pete", "In onSignInSucceeded...");
+        if (ENABLE_MEM_LOGS) Log.d("Pete", "In onSignInSucceeded...");
         MyisSignedIn = true;
 
-        Log.v("Pete", "isTaskRoot(): " + isTaskRoot());
+        if (ENABLE_MEM_LOGS) Log.d("Pete", "isTaskRoot(): " + isTaskRoot());
 
 
         // Set the greeting appropriately on main menu
         Player p = Games.Players.getCurrentPlayer(getApiClient());
         String displayName;
         if (p == null) {
-            Log.v("Pete", "getCurrentPlayer() is NULL!");
+            if (ENABLE_MEM_LOGS) Log.d("Pete", "getCurrentPlayer() is NULL!");
             //displayName = "???";
         } else {
             displayName = p.getDisplayName();
-            Log.v("Pete", "getCurrentPlayer() is " + displayName);
+            if (ENABLE_MEM_LOGS) Log.d("Pete", "getCurrentPlayer() is " + displayName);
 
             SharedPreferences sp = getPreferences(MODE_PRIVATE);
             PlayerName = sp.getString("PlayerName", "NoName");
@@ -484,7 +659,7 @@ public class MemoryGameActivity extends BaseGameActivity implements NumberPicker
     }
 
     public void saveLocal(Context context) {
-        //if(ENABLE_LOGS) Log.v("Pete", "AccomplishmentsOutbox saveLocal...");
+        //if(ENABLE_LOGS) if (ENABLE_MEM_LOGS) Log.d("Pete", "AccomplishmentsOutbox saveLocal...");
 
         preferences = new SecurePreferences(context, "my-preferences", "SometopSecretKey1235", true);
 
@@ -496,24 +671,24 @@ public class MemoryGameActivity extends BaseGameActivity implements NumberPicker
     }
 
     public void loadLocal() {
-        Log.v("Pete", "AccomplishmentsOutbox loadLocal...");
+        if (ENABLE_MEM_LOGS) Log.d("Pete", "AccomplishmentsOutbox loadLocal...");
 
         //Init
         preferences = new SecurePreferences(this, "my-preferences", "SometopSecretKey1235", true);
 
         for(int i=0;i<AchievementString.length;i++) {
             AchievementOnServer[i] = Boolean.valueOf(preferences.getBooleanString("AchievementOnServer" + "_" + i));
-            Log.v("Pete", "loadLocal i: "+ i + " AchievementOnServer[i]: " + AchievementOnServer[i]);
+            if (ENABLE_MEM_LOGS) Log.d("Pete", "loadLocal i: "+ i + " AchievementOnServer[i]: " + AchievementOnServer[i]);
 
             Achievement[i] = Boolean.valueOf(preferences.getBooleanString("Achievement" + "_" + i));
-            Log.v("Pete", "loadLocal i: " + i + " Achievement[i]: " + Achievement[i]);
+            if (ENABLE_MEM_LOGS) Log.d("Pete", "loadLocal i: " + i + " Achievement[i]: " + Achievement[i]);
 
         }
 
     }
 
     public void SetAchievement(){
-        Log.v("Pete", "SetAchievement - MemoryLevel: " + MemoryLevel);
+        if (ENABLE_MEM_LOGS) Log.d("Pete", "SetAchievement - MemoryLevel: " + MemoryLevel);
 
         if(child_mode==1)
             return;
@@ -521,11 +696,11 @@ public class MemoryGameActivity extends BaseGameActivity implements NumberPicker
         if(!GetIsAchievemented(MemoryLevel))
             Toast.makeText(this, this.getString(R.string.achievement) + ": " + this.getString(R.string.level_achievement_reached), Toast.LENGTH_LONG).show();
 
-        Log.v("Pete", "Call PicSetAchievement...");
+        if (ENABLE_MEM_LOGS) Log.d("Pete", "Call PicSetAchievement...");
 
         Achievement[MemoryLevel] = true;
 
-        Log.v("Pete", "Call saveLocal...");
+        if (ENABLE_MEM_LOGS) Log.d("Pete", "Call saveLocal...");
         saveLocal(this);
 
         pushAccomplishments();
@@ -535,13 +710,11 @@ public class MemoryGameActivity extends BaseGameActivity implements NumberPicker
 
     public boolean GetIsAchievemented(int level){
 
-        Log.v("Pete", "GetIsThisPicLevelAchievemented - level: " + level);
-        Log.v("Pete", "AchievementOnServer[level]: " + AchievementOnServer[level]);
+        if (ENABLE_MEM_LOGS) Log.d("Pete", "GetIsThisPicLevelAchievemented - level: " + level);
+        if (ENABLE_MEM_LOGS) Log.d("Pete", "AchievementOnServer[level]: " + AchievementOnServer[level]);
 
-        if(Achievement[level] || AchievementOnServer[level])
-            return true;
+        return Achievement[level] || AchievementOnServer[level];
 
-        return false;
     }
 
     //@Override
@@ -562,24 +735,23 @@ public class MemoryGameActivity extends BaseGameActivity implements NumberPicker
 
     void pushAccomplishments() {
 
-        Log.v("Pete", "pushAccomplishments.....");
+        if (ENABLE_MEM_LOGS) Log.d("Pete", "pushAccomplishments.....");
 
         if (!isSignedIn()) {
             // can't push to the cloud, so save locally
-            //if(ENABLE_LOGS) Log.v("Pete", "pushAccomplishments - not isSignedIn");
+            //if(ENABLE_LOGS) if (ENABLE_MEM_LOGS) Log.d("Pete", "pushAccomplishments - not isSignedIn");
             saveLocal(this);
             return;
         }
 
-        Log.v("Pete", "pushAccomplishments - isSignedIn");
+        if (ENABLE_MEM_LOGS) Log.d("Pete", "pushAccomplishments - isSignedIn");
 
 
         for(int i=0;i<AchievementString.length;i++) {
 
-            //TODO only push when not delivered to server!!
             //For Pic level Achievements
-            if (Achievement[i] && !AchievementSent) {
-                Log.v("Pete", "pushing Achievement: " + i);
+            if (Achievement[i] && !AchievementSent && !AchievementOnServer[i]) {
+                if (ENABLE_MEM_LOGS) Log.d("Pete", "pushing Achievement: " + i);
 
                 //This way we might get ack if this succeeds....
                 Games.Achievements.unlockImmediate(mHelper.getApiClient(), AchievementString[i]).setResultCallback(new AchievementResultCallback());
@@ -602,7 +774,7 @@ public class MemoryGameActivity extends BaseGameActivity implements NumberPicker
         @Override
         public void onResult(UpdateAchievementResult res) {
             if (res.getStatus().getStatusCode() == 0) {
-                Log.v("Pete", "Achievement delivered to server!!!!");
+                if (ENABLE_MEM_LOGS) Log.d("Pete", "Achievement delivered to server!!!!");
 
                 AchievementSent = false;
                 AchievementOnServer[AchievementAck] = true;
@@ -612,10 +784,157 @@ public class MemoryGameActivity extends BaseGameActivity implements NumberPicker
         }
     }
 
+    public void CheckIfYouShouldKnowTheNext(int Id, int pos){
+
+        for(int i=0; i<Pictures.MEMORY_IDS_TEST.length + 1; i++) {
+            if(i!=pos) {
+                if (SeenPictures[Id][i] >= 1) {
+                    ShouldKnowNow = true;
+                    KnownID = Id;
+                    KnownPos = i;
+                }
+            }
+        }
+
+        if(ShouldKnowNow)
+            Toast.makeText(MemoryGameActivity.this, "You Should Know Now Where the Picture Is!!!", Toast.LENGTH_SHORT).show();
+
+    }
+
+    private void ShuffleArray(int[] array)
+    {
+        int index;
+        Random random = new Random();
+        for (int i = array.length - 1; i > 0; i--)
+        {
+            index = random.nextInt(i + 1);
+            if (index != i)
+            {
+                array[index] ^= array[i];
+                array[i] ^= array[index];
+                array[index] ^= array[i];
+            }
+        }
+    }
+
+    public void ShowPopUp(){
+        if (ENABLE_MEM_LOGS) Log.d("Pete", "ShowPopUp....");
+
+        Display display = getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        int windowWidth = size.x;
+        int windowHeight = size.y;
+
+        int FontSize = 16;
+
+        ImageButton justfind;
+
+        // POPUP WINDOW STARTS //
+        LayoutInflater layoutInflater  = (LayoutInflater)getBaseContext().getSystemService(LAYOUT_INFLATER_SERVICE);
+        View popupView = layoutInflater.inflate(R.layout.popup, null);
+
+        // final PopupWindow popupWindow;
+        popupWindow = new PopupWindow(popupView, LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+        popupWindow.setFocusable(true);
+        popupWindow.setWidth(windowWidth * 2 / 3);
+        //popupWindow.setHeight(windowWidth*2/3);
+        popupWindow.setOutsideTouchable(false);
+        popupWindow.setHeight(LayoutParams.WRAP_CONTENT);
+        //popupWindow.setBackgroundDrawable(new BitmapDrawable());
+
+        //Log.v("Pete", "MyStringBuffer.length: " + MyStringBuffer.length);
+
+        String message = "This level is not available in free version!\n\n Buy infinite laughs?\n";
+
+        LinearLayout ll = (LinearLayout)popupView.findViewById(R.id.popup_ll);
+
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+
+        final TextView rowTextView = new TextView(this);
+        rowTextView.setText(message);
+
+        rowTextView.setGravity(Gravity.CENTER);
+        rowTextView.setTextColor(Color.WHITE);
+        rowTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, FontSize);
+        rowTextView.setTypeface(rowTextView.getTypeface(), Typeface.BOLD);
+        // add the textview to the linearlayout
+        ll.addView(rowTextView,params);
+
+        /*
+        for(int i = 0; i < MyStringBuffer.length; i++){
+            // create a new textview
+            final TextView rowTextView_loop = new TextView(this);
+            rowTextView_loop.setText(MyStringBuffer[i]);
+
+            LinearLayout.LayoutParams params1 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            rowTextView_loop.setGravity(Gravity.CENTER);
+            rowTextView_loop.setTextColor(Color.WHITE);
+            // add the textview to the linearlayout
+            ll.addView(rowTextView_loop,params1);
+        }
+        */
+
+        Button btnDismiss = new Button(this);
+        LinearLayout.LayoutParams params2 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        params2.setMargins(5, 5, 5, 10);
+        //params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT)
+        //params.addRule(RelativeLayout.LEFT_OF, R.id.id_to_be_left_of);
+        btnDismiss.setLayoutParams(params2);
+        btnDismiss.setText("CANCEL");
+        btnDismiss.setTextSize(TypedValue.COMPLEX_UNIT_SP, FontSize);
+        btnDismiss.setBackgroundResource(R.drawable.button_info_page);
+        btnDismiss.setTextColor(Color.WHITE);
+
+        ll.addView(btnDismiss, params2);
+
+        btnDismiss.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (ENABLE_MEM_LOGS) Log.v("Pete", "ShowPopUp onClick - CANCEL....");
+                popupWindow.dismiss();
+                called_show();
+            }
+        });
+
+        Button buy = new Button(this);
+        LinearLayout.LayoutParams params3 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        params3.setMargins(5,5,5,5);
+        buy.setLayoutParams(params3);
+        buy.setText("BUY");
+        buy.setTextSize(TypedValue.COMPLEX_UNIT_SP, FontSize);
+        buy.setBackgroundResource(R.drawable.button_info_page);
+        buy.setTextColor(Color.WHITE);
+
+        ll.addView(buy, params3);
+
+        buy.setOnClickListener(new Button.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                if (ENABLE_MEM_LOGS) Log.v("Pete", "ShowPopUp onClick - buy....");
+                BabyMain.SetBuyInWanted();
+                popupWindow.dismiss();
+                CloseThisActivity();
+                //BabyMainActivity.InfiniteLaughButtonClicked(MemoryGameActivity.this);
+
+            }
+        });
+
+        //Just find some view where we can refer....
+        justfind = (ImageButton)findViewById(R.id.settings);
+        popupWindow.showAtLocation(justfind, Gravity.CENTER, 0, 0);
+        // POPUP WINDOW ENDS //
+
+    }
+
+    public void CloseThisActivity(){
+        finish();
+    }
+
     @Override
     public void onPause() {
         super.onPause();
-        Log.v("Pete", "MemoryGameActivity onPause...");
+        if (ENABLE_MEM_LOGS) Log.d("Pete", "MemoryGameActivity onPause...");
 
         saveData();
         //MyCountDownTimer.onFinish();
@@ -627,13 +946,13 @@ public class MemoryGameActivity extends BaseGameActivity implements NumberPicker
 
         // Release any resources from previous MediaPlayer
         if (mp_click != null) {
-            Log.d("Pete", "onPause() - mp_click.release()");
+            if (ENABLE_MEM_LOGS) Log.d("Pete", "onPause() - mp_click.release()");
             mp_click.release();
             mp_click = null;
         }
 
         if (mp_fan != null) {
-            Log.d("Pete", "onPause() - mp_fan.release()");
+            if (ENABLE_MEM_LOGS) Log.d("Pete", "onPause() - mp_fan.release()");
             mp_fan.release();
             mp_fan = null;
         }
@@ -645,10 +964,11 @@ public class MemoryGameActivity extends BaseGameActivity implements NumberPicker
     @Override
     public void onResume() {
         super.onResume();
-        Log.v("Pete", "MemoryGameActivity onResume...");
+        if (ENABLE_MEM_LOGS) Log.d("Pete", "MemoryGameActivity onResume...");
 
         loadData();
 
+        NbrOfPictures_tmp = NbrOfPictures;
         OpenPictures=0;
         SamePictures=0;
 
@@ -659,22 +979,24 @@ public class MemoryGameActivity extends BaseGameActivity implements NumberPicker
             mp_click = MediaPlayer.create(this, R.raw.click);
 
 
-        //Get all childs from Gridview...
-        GridView gv = (GridView) findViewById(R.id.gridview);
+        if(!GameOver) {
+            //Get all childs from Gridview...
+            GridView gv = (GridView) findViewById(R.id.gridview);
 
-        int childcount = gv.getChildCount();
-        for (int i=0; i < childcount; i++){
-            View v = gv.getChildAt(i);
-            //Log.d("Pete", "v.getId(): " + v.getId());
+            int childcount = gv.getChildCount();
+            for (int i = 0; i < childcount; i++) {
+                View v = gv.getChildAt(i);
+                //if (ENABLE_MEM_LOGS) Log.d("Pete", "v.getId(): " + v.getId());
 
-            if(v.getId()!=OpenPicureID){
-                imageView = (ImageView) v;
-                int color = Color.parseColor("#FFFFFF");
-                imageView.setColorFilter(color);
-            }else{
-                OpenPictures++;
+                if (v.getId() != OpenPicureID) {
+                    imageView = (ImageView) v;
+                    int color = Color.parseColor("#FFFFFF");
+                    imageView.setColorFilter(color);
+                } else {
+                    OpenPictures++;
+                }
+
             }
-
         }
 
         UpdateUi();
@@ -686,7 +1008,7 @@ public class MemoryGameActivity extends BaseGameActivity implements NumberPicker
     public void onDestroy() {
         super.onDestroy();
 
-        Log.d("Pete", "MemoryGameActivity onDestroy()...");
+        if (ENABLE_MEM_LOGS) Log.d("Pete", "MemoryGameActivity onDestroy()...");
 
         saveData();
 

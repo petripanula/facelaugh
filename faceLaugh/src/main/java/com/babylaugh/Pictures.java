@@ -141,6 +141,30 @@ public class Pictures {
 			R.drawable.baby_smile18,
 			R.drawable.baby_smile18,
 	};
+
+	public static final int[] MEMORY_IDS_TEST = {
+			R.drawable.baby_smile1,
+			R.drawable.baby_smile2,
+			R.drawable.baby_smile3,
+			R.drawable.baby_smile4,
+			R.drawable.baby_smile5,
+			R.drawable.baby_smile6,
+			R.drawable.baby_smile7,
+			R.drawable.baby_smile8,
+			R.drawable.baby_smile9,
+			R.drawable.baby_smile10,
+			R.drawable.baby_smile11,
+			R.drawable.baby_smile12,
+			R.drawable.baby_smile13,
+			R.drawable.baby_smile14,
+			R.drawable.baby_smile15,
+			R.drawable.baby_smile16,
+			R.drawable.baby_smile17,
+			R.drawable.baby_smile18,
+			R.drawable.baby_smile19,
+			R.drawable.baby_smile20,
+			R.drawable.baby_smile21,
+	};
 	
 	
 }

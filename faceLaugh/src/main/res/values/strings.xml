@@ -13,9 +13,11 @@
     <string name="restart">Restart</string>
     <string name="TimeToRun">  Minutes To Run  </string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="game_over">GAME OVER!!!!</string>
     <string name="achievements_not_available">Log in to see achievements...</string>
     <string name="achievements_not_available_child">Achievements not available in Child Mode!</string>
     <string name="level_not_available">Level Not Available - you have pass previous levels first!!</string>
+    <string name="level_not_available_in_free">Subscribe to infinite laughs to play this level!!</string>
     <string name="achievement">Achievement</string>
     <string name="level_achievement_reached">Memory Level Passed!!</string>
     <string name="title_activity_memory_game">MemoryGameActivity</string>
