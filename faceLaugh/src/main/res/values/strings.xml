@@ -14,6 +14,7 @@
     <string name="TimeToRun">  Minutes To Run  </string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
     <string name="game_over">GAME OVER!!!!</string>
+    <string name="game_over_timeout">GAME OVER - RUN OUT OF TIME!</string>
     <string name="achievements_not_available">Log in to see achievements...</string>
     <string name="achievements_not_available_child">Achievements not available in Child Mode!</string>
     <string name="level_not_available">Level Not Available - you have pass previous levels first!!</string>

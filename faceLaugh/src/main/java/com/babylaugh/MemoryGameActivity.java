@@ -1,25 +1,26 @@
 package com.babylaugh;
 
 import com.facelaugh.R;
+import com.google.analytics.tracking.android.EasyTracker;
+import com.google.analytics.tracking.android.MapBuilder;
 import com.google.android.gms.games.Games;
 import com.google.android.gms.games.Player;
 import com.google.example.games.basegameutils.BaseGameActivity;
 
 import android.app.ActionBar.LayoutParams;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
-import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
@@ -54,19 +55,26 @@ import com.google.android.gms.common.api.ResultCallback;
 
 public class MemoryGameActivity extends BaseGameActivity implements NumberPicker.OnValueChangeListener {
 
+    private EasyTracker easyTracker = null;
+
     private MediaPlayer mp_click;
     private MediaPlayer mp_fan;
     String[] AllowedValues;
     public static int SamePictures,oldposition,OpenPictures,NbrOfPictures,OpenPicureID,NbrOfPictures_tmp,DefaultValue, DefaultValue_tmp;
     ImageView imageView_old;
     CountDownTimer MyCountDownTimer;
+    CountDownTimer MyCountDownTimer2;
     ImageView imageView;
     Boolean TimerRunning = false;
+    Boolean TimerRunning2 = false;
     int picturewidth;
     public static boolean MyisSignedIn = false;
     String PlayerName="NoName";
     int child_mode;
-    String[] AchievementString = new String[9];
+    String[] AchievementString = new String[10];
+    public static boolean[] AchievementOnServer = new boolean[10];
+    public static boolean[] Achievement = new boolean[10];
+
     public static int[] NewArray;
     public static int[][] SeenPictures;
     SecurePreferences preferences;
@@ -75,18 +83,19 @@ public class MemoryGameActivity extends BaseGameActivity implements NumberPicker
     public static int KnownID = -1;
     public static int KnownPos = -1;
 
-    public static boolean[] AchievementOnServer = new boolean[9];
-    public static boolean[] Achievement = new boolean[9];
+
     public static int AchievementAck = -1;
     public static boolean AchievementSent = false;
     public static int MemoryLevel = -1;
     // request codes we use when invoking an external activity
     final int RC_UNUSED = 5001;
 
-    public static final boolean ENABLE_MEM_LOGS = true;
+    public static final boolean ENABLE_MEM_LOGS = false;
 
     PopupWindow popupWindow;
     public String[] MyStringBuffer;
+
+    String PopUpmessage="NA";
 
     //BabyMain BabyMainActivity = new BabyMain();
 
@@ -115,6 +124,8 @@ public class MemoryGameActivity extends BaseGameActivity implements NumberPicker
         loadLocal();
         CheckHighestLevel();
 
+        easyTracker = EasyTracker.getInstance(MemoryGameActivity.this);
+        easyTracker.send(MapBuilder.createEvent("MemoryGameActivity", "onCreate", "1", null).build());
 
         int TableIndex = Pictures.MEMORY_IDS_TEST.length*2+1;
         /// Array to test if picture is seen or not...
@@ -161,24 +172,39 @@ public class MemoryGameActivity extends BaseGameActivity implements NumberPicker
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-        int nbr_of_pictures = Pictures.BACKGROUND_IDS.length;
+        int nbr_of_pictures = Pictures.MEMORY_BACKGROUND_IDS.length;
         int random_range = nbr_of_pictures - 1;
         int pic_id = random_pic.nextInt(random_range - 1 + 1) + 1;
 
-        LinearLayout rLayout = (LinearLayout) findViewById (R.id.memory_activity);
-        Resources res = getResources(); //resource handle
-        Drawable drawable = res.getDrawable(Pictures.BACKGROUND_IDS[pic_id]); //new Image that was added to the res folder
-        rLayout.setBackground(drawable);
-
-        GridView gridview = (GridView) findViewById(R.id.gridview);
-
-        int sizeofcubeside = (int)sqrt(NbrOfPictures);
 
         Display display = getWindowManager().getDefaultDisplay();
         Point size = new Point();
         display.getSize(size);
         int windowWidth = size.x;
         int windowHeight = size.y;
+
+
+        imageView = new ImageView(this);
+        BitmapDrawable ob = new BitmapDrawable(getResources(), decodeSampledBitmapFromResource(imageView.getResources(), Pictures.MEMORY_BACKGROUND_IDS[pic_id], windowWidth, windowHeight));
+
+        LinearLayout rLayout = (LinearLayout) findViewById (R.id.memory_activity);
+        //Resources res = getResources(); //resource handle
+        //Drawable drawable = res.getDrawable(Pictures.MEMORY_BACKGROUND_IDS[pic_id]); //new Image that was added to the res folder
+        //rLayout.setBackground(drawable);
+        rLayout.setBackground(ob);
+
+
+        GridView gridview = (GridView) findViewById(R.id.gridview);
+
+        int sizeofcubeside = (int)sqrt(NbrOfPictures);
+
+        /*
+        Display display = getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        int windowWidth = size.x;
+        int windowHeight = size.y;
+        */
         //How this should be calculated (weigth 7, weight 1)
         int HeightOfGridArea = windowHeight*6/7;
 
@@ -237,6 +263,13 @@ public class MemoryGameActivity extends BaseGameActivity implements NumberPicker
                 if(GameOver)
                     return;
 
+                if(child_mode==0) {
+                    if(MyCountDownTimer2!=null)
+                        MyCountDownTimer2.cancel();
+
+                    SetCountDownTimer2(7000);
+                }
+
                 imageView = (ImageView) v;
                 imageView.clearColorFilter();
 
@@ -284,7 +317,12 @@ public class MemoryGameActivity extends BaseGameActivity implements NumberPicker
                 }
 
                 if (OpenPictures == NbrOfPictures) {
-                    Toast.makeText(MemoryGameActivity.this, "All pictures open!!!!", Toast.LENGTH_SHORT).show();
+
+                    if(MyCountDownTimer2!=null)
+                        MyCountDownTimer2.cancel();
+
+                    easyTracker.send(MapBuilder.createEvent("MemoryGameActivity", "All pictures open", Integer.toString(MemoryLevel), null).build());
+                    //Toast.makeText(MemoryGameActivity.this, "All pictures open!!!!", Toast.LENGTH_SHORT).show();
                     SetAchievement();
                 }
 
@@ -296,7 +334,7 @@ public class MemoryGameActivity extends BaseGameActivity implements NumberPicker
     }
 
     public void Restart(View arg0){
-        Toast.makeText(MemoryGameActivity.this, "Restart!!!!", Toast.LENGTH_SHORT).show();
+        //Toast.makeText(MemoryGameActivity.this, "Restart!!!!", Toast.LENGTH_SHORT).show();
 
         MyStringBuffer = new String[3];
 
@@ -459,17 +497,20 @@ public class MemoryGameActivity extends BaseGameActivity implements NumberPicker
                 else
                     Index = DefaultValue - 1;
 
-                if(!BabyMain.mSubscribedToInfiniteLaugh && child_mode==0 && DefaultValue>6) {
+                if(!BabyMain.mSubscribedToInfiniteLaugh && child_mode==0 && DefaultValue>4) {
                     //showAlert(getString(R.string.level_not_available_in_free));
                     d.dismiss();
-                    ShowPopUp();
+                    ShowPopUp_Buy();
                 }else {
 
                     if (Achievement[Index] || AchievementOnServer[Index] || Index == 0 || child_mode == 1) {
                         d.dismiss();
                         Start();
                     } else {
-                        showAlert(getString(R.string.level_not_available));
+                        PopUpmessage = getString(R.string.level_not_available);
+                        d.dismiss();
+                        ShowPopUp_OK(true);
+                        //showAlert(getString(R.string.level_not_available));
                     }
                 }
             }
@@ -485,7 +526,6 @@ public class MemoryGameActivity extends BaseGameActivity implements NumberPicker
         d.show();
 
     }
-
 
 
     public void show(View arg0)
@@ -554,7 +594,12 @@ public class MemoryGameActivity extends BaseGameActivity implements NumberPicker
                         }
                     }
 
-                    showAlert(getString(R.string.game_over));
+                    if(MyCountDownTimer2!=null)
+                        MyCountDownTimer2.cancel();
+
+                    PopUpmessage = getString(R.string.game_over);
+                    ShowPopUp_OK(false);
+                    //showAlert(getString(R.string.game_over));
                 }else {
                     int color = Color.parseColor("#FFFFFF");
                     imageView.setColorFilter(color);
@@ -564,6 +609,29 @@ public class MemoryGameActivity extends BaseGameActivity implements NumberPicker
                 }
 
                 TimerRunning = false;
+            }
+        }.start();
+    }
+
+    public void SetCountDownTimer2(long startfromthis_ms) {
+
+        TimerRunning2 = true;
+
+        MyCountDownTimer2 = new CountDownTimer(startfromthis_ms, 1000) {
+
+            public void onTick(long millisUntilFinished) {
+
+                //myRemainingTime = millisUntilFinished;
+                //FreeSleeperRunningtime++;
+            }
+
+            public void onFinish() {
+                PopUpmessage = getString(R.string.game_over_timeout);
+                ShowPopUp_OK(false);
+                //showAlert(getString(R.string.game_over_timeout));
+                TimerRunning2 = false;
+
+                GameOver = true;
             }
         }.start();
     }
@@ -604,11 +672,7 @@ public class MemoryGameActivity extends BaseGameActivity implements NumberPicker
         AchievementString[6] = getString(R.string.achievement_memory_with_24_pictures);
         AchievementString[7] = getString(R.string.achievement_memory_with_30_pictures);
         AchievementString[8] = getString(R.string.achievement_memory_with_36_pictures);
-        /*
-        AchievementString[9] = getString(R.string.achievement_memory_with_36_pictures);
-        AchievementString[10] = getString(R.string.achievement_memory_with_36_pictures);
-        AchievementString[11] = getString(R.string.achievement_memory_with_36_pictures);
-        */
+        AchievementString[9] = getString(R.string.achievement_memory_with_42_pictures);
     }
 
     protected boolean isSignedIn() {
@@ -693,9 +757,10 @@ public class MemoryGameActivity extends BaseGameActivity implements NumberPicker
         if(child_mode==1)
             return;
 
-        if(!GetIsAchievemented(MemoryLevel))
+        if(!GetIsAchievemented(MemoryLevel)) {
             Toast.makeText(this, this.getString(R.string.achievement) + ": " + this.getString(R.string.level_achievement_reached), Toast.LENGTH_LONG).show();
-
+            easyTracker.send(MapBuilder.createEvent(getString(R.string.achievement), getString(R.string.level_achievement_reached), Integer.toString(MemoryLevel), null).build());
+        }
         if (ENABLE_MEM_LOGS) Log.d("Pete", "Call PicSetAchievement...");
 
         Achievement[MemoryLevel] = true;
@@ -817,14 +882,14 @@ public class MemoryGameActivity extends BaseGameActivity implements NumberPicker
         }
     }
 
-    public void ShowPopUp(){
-        if (ENABLE_MEM_LOGS) Log.d("Pete", "ShowPopUp....");
+    public void ShowPopUp_Buy(){
+        if (ENABLE_MEM_LOGS) Log.d("Pete", "ShowPopUp_Buy....");
 
         Display display = getWindowManager().getDefaultDisplay();
         Point size = new Point();
         display.getSize(size);
         int windowWidth = size.x;
-        int windowHeight = size.y;
+        //int windowHeight = size.y;
 
         int FontSize = 16;
 
@@ -927,9 +992,97 @@ public class MemoryGameActivity extends BaseGameActivity implements NumberPicker
 
     }
 
+    public void ShowPopUp_OK(final boolean callShow){
+        if (ENABLE_MEM_LOGS) Log.d("Pete", "ShowPopUp_OK....");
+
+        Display display = getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        int windowWidth = size.x;
+        //int windowHeight = size.y;
+
+        int FontSize = 16;
+
+        ImageButton justfind;
+
+        // POPUP WINDOW STARTS //
+        LayoutInflater layoutInflater  = (LayoutInflater)getBaseContext().getSystemService(LAYOUT_INFLATER_SERVICE);
+        View popupView = layoutInflater.inflate(R.layout.popup2, null);
+
+        // final PopupWindow popupWindow;
+        popupWindow = new PopupWindow(popupView, LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+        popupWindow.setFocusable(true);
+        popupWindow.setWidth(windowWidth * 2 / 3);
+        //popupWindow.setHeight(windowWidth*2/3);
+        popupWindow.setOutsideTouchable(false);
+        popupWindow.setHeight(LayoutParams.WRAP_CONTENT);
+
+        String message = "\n" + PopUpmessage + "\n\n";
+
+        LinearLayout ll = (LinearLayout)popupView.findViewById(R.id.popup_ll);
+
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+
+        final TextView rowTextView = new TextView(this);
+        rowTextView.setText(message);
+
+        rowTextView.setGravity(Gravity.CENTER);
+        rowTextView.setTextColor(Color.WHITE);
+        rowTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, FontSize);
+        rowTextView.setTypeface(rowTextView.getTypeface(), Typeface.BOLD);
+        // add the textview to the linearlayout
+        ll.addView(rowTextView,params);
+
+        Button btnDismiss = new Button(this);
+        LinearLayout.LayoutParams params2 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        params2.setMargins(5, 5, 5, 20);
+        btnDismiss.setLayoutParams(params2);
+        btnDismiss.setText("OK");
+        btnDismiss.setTextSize(TypedValue.COMPLEX_UNIT_SP, FontSize);
+        btnDismiss.setBackgroundResource(R.drawable.button_info_page);
+        btnDismiss.setTextColor(Color.WHITE);
+
+        ll.addView(btnDismiss, params2);
+
+        btnDismiss.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (ENABLE_MEM_LOGS) Log.v("Pete", "ShowPopUp onClick - OK....");
+                popupWindow.dismiss();
+
+                if(callShow)
+                    called_show();
+            }
+        });
+
+          //Just find some view where we can refer....
+        justfind = (ImageButton)findViewById(R.id.settings);
+        popupWindow.showAtLocation(justfind, Gravity.CENTER, 0, 0);
+        // POPUP WINDOW ENDS //
+
+    }
+
+
     public void CloseThisActivity(){
         finish();
     }
+
+    @Override
+    public void onStart() {
+        if(ENABLE_MEM_LOGS) Log.v("Pete", "BabyMain onStart...");
+        super.onStart();
+        // The rest of your onStart() code.
+        EasyTracker.getInstance(this).activityStart(this);  // Add this method.
+    }
+
+    @Override
+    public void onStop() {
+        if(ENABLE_MEM_LOGS) Log.v("Pete", "BabyMain onStop...");
+        super.onStop();
+        // The rest of your onStop() code.
+        EasyTracker.getInstance(this).activityStop(this);  // Add this method.
+    }
+
 
     @Override
     public void onPause() {
@@ -937,10 +1090,12 @@ public class MemoryGameActivity extends BaseGameActivity implements NumberPicker
         if (ENABLE_MEM_LOGS) Log.d("Pete", "MemoryGameActivity onPause...");
 
         saveData();
-        //MyCountDownTimer.onFinish();
 
         if(MyCountDownTimer!=null)
             MyCountDownTimer.cancel();
+
+        if(MyCountDownTimer2!=null)
+            MyCountDownTimer2.cancel();
 
         TimerRunning = false;
 
@@ -1014,4 +1169,45 @@ public class MemoryGameActivity extends BaseGameActivity implements NumberPicker
 
     }
 
+    public static int calculateInSampleSize(BitmapFactory.Options options,
+                                            int reqWidth, int reqHeight) {
+        // Raw height and width of image
+        final int height = options.outHeight;
+        final int width = options.outWidth;
+        int inSampleSize = 1;
+
+        if (height > reqHeight || width > reqWidth) {
+
+            // Calculate ratios of height and width to requested height and
+            // width
+            final int heightRatio = Math.round((float) height
+                    / (float) reqHeight);
+            final int widthRatio = Math.round((float) width / (float) reqWidth);
+
+            // Choose the smallest ratio as inSampleSize value, this will
+            // guarantee
+            // a final image with both dimensions larger than or equal to the
+            // requested height and width.
+            inSampleSize = heightRatio < widthRatio ? heightRatio : widthRatio;
+        }
+
+        return inSampleSize;
+    }
+
+    public static Bitmap decodeSampledBitmapFromResource(Resources res,
+                                                         int resId, int reqWidth, int reqHeight) {
+
+        // First decode with inJustDecodeBounds=true to check dimensions
+        final BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeResource(res, resId, options);
+
+        // Calculate inSampleSize
+        options.inSampleSize = calculateInSampleSize(options, reqWidth,
+                reqHeight);
+
+        // Decode bitmap with inSampleSize set
+        options.inJustDecodeBounds = false;
+        return BitmapFactory.decodeResource(res, resId, options);
+    }
 }
