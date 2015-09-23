@@ -369,6 +369,8 @@ public class MemoryGameActivity extends BaseGameActivity implements NumberPicker
 
         NbrOfPictures_current = NbrOfPictures;
 
+        NbrOfPictures = 4;
+
         for (int i = AchievementString.length - 1; i >= 0; i--) {
 
             if (Achievement[i] || AchievementOnServer[i]) {
@@ -382,12 +384,14 @@ public class MemoryGameActivity extends BaseGameActivity implements NumberPicker
                 NbrOfPictures = Integer.valueOf(AllowedValues[Index]);
                 if (ENABLE_MEM_LOGS) Log.d("Pete", "CheckHighestLevel - NbrOfPictures: " + NbrOfPictures);
 
-                if(NbrOfPictures_current<NbrOfPictures)
-                    NbrOfPictures = NbrOfPictures_current;
-
                 break;
             }
         }
+
+
+        if(NbrOfPictures_current<NbrOfPictures)
+            NbrOfPictures = NbrOfPictures_current;
+
         saveData();
     }
 
@@ -408,9 +412,11 @@ public class MemoryGameActivity extends BaseGameActivity implements NumberPicker
         }
 
         if(child_mode==0) {
+            RestartNeeded=true;
             for (int i = AchievementString.length - 1; i >= 0; i--) {
 
                 if (Achievement[i] || AchievementOnServer[i]) {
+                    RestartNeeded=false;
                     if (ENABLE_MEM_LOGS) Log.d("Pete", "Mode - this is first level with achievement: " + i);
                     if (ENABLE_MEM_LOGS) Log.d("Pete", "Mode - DefaultValue: " + DefaultValue);
                     Index = i + 1;
