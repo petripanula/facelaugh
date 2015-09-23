@@ -902,10 +902,11 @@ public class MemoryGameActivity extends BaseGameActivity implements NumberPicker
         // final PopupWindow popupWindow;
         popupWindow = new PopupWindow(popupView, LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
         popupWindow.setFocusable(true);
-        popupWindow.setWidth(windowWidth * 2 / 3);
+        //popupWindow.setWidth(windowWidth * 2 / 3);
         //popupWindow.setHeight(windowWidth*2/3);
         popupWindow.setOutsideTouchable(false);
         popupWindow.setHeight(LayoutParams.WRAP_CONTENT);
+        popupWindow.setWidth(LayoutParams.WRAP_CONTENT);
         //popupWindow.setBackgroundDrawable(new BitmapDrawable());
 
         //Log.v("Pete", "MyStringBuffer.length: " + MyStringBuffer.length);
@@ -1012,10 +1013,11 @@ public class MemoryGameActivity extends BaseGameActivity implements NumberPicker
         // final PopupWindow popupWindow;
         popupWindow = new PopupWindow(popupView, LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
         popupWindow.setFocusable(true);
-        popupWindow.setWidth(windowWidth * 2 / 3);
+        //popupWindow.setWidth(windowWidth * 2 / 3);
         //popupWindow.setHeight(windowWidth*2/3);
         popupWindow.setOutsideTouchable(false);
         popupWindow.setHeight(LayoutParams.WRAP_CONTENT);
+        popupWindow.setWidth(LayoutParams.WRAP_CONTENT);
 
         String message = "\n" + PopUpmessage + "\n\n";
 
