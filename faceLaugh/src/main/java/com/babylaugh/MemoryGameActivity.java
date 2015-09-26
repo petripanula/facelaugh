@@ -61,6 +61,8 @@ public class MemoryGameActivity extends BaseGameActivity implements NumberPicker
     private MediaPlayer mp_fan;
     String[] AllowedValues;
     public static int SamePictures,oldposition,OpenPictures,NbrOfPictures,OpenPicureID,NbrOfPictures_tmp,DefaultValue, DefaultValue_tmp;
+    public static int NbrOfPictures_oncreate,DefaultValue_oncreate;
+
     ImageView imageView_old;
     CountDownTimer MyCountDownTimer;
     CountDownTimer MyCountDownTimer2;
@@ -153,6 +155,9 @@ public class MemoryGameActivity extends BaseGameActivity implements NumberPicker
         }
 
         NbrOfPictures_tmp = NbrOfPictures;
+
+        NbrOfPictures_oncreate  = NbrOfPictures;
+        DefaultValue_oncreate = DefaultValue;
 
         mp_click = MediaPlayer.create(this, R.raw.click);
         mp_fan = MediaPlayer.create(this, R.raw.fanfare);
@@ -359,7 +364,24 @@ public class MemoryGameActivity extends BaseGameActivity implements NumberPicker
 
     }
 
+    public int RetunHigestLevelPossible(){
+
+        for (int i = AchievementString.length - 1; i >= 0; i--) {
+
+            if (Achievement[i] || AchievementOnServer[i]) {
+
+                if (ENABLE_MEM_LOGS) Log.d("Pete", "RetunHigestLevelPossible - i: " + i);
+                return i;
+
+            }
+        }
+
+        return 0;
+    }
+
     public void CheckHighestLevel(){
+
+        if (ENABLE_MEM_LOGS) Log.d("Pete", "CheckHighestLevel - NbrOfPictures: " + NbrOfPictures);
 
         if(child_mode==1)
             return;
@@ -397,11 +419,15 @@ public class MemoryGameActivity extends BaseGameActivity implements NumberPicker
 
     public void Mode(View arg0){
         ImageButton ib = (ImageButton) findViewById(R.id.mode);
-        Boolean RestartNeeded=false;
+        Boolean RestartNeeded;
         int Index;
 
         if(child_mode==0) {
             child_mode=1;
+
+            if(MyCountDownTimer2!=null)
+                MyCountDownTimer2.cancel();
+
             ib.setImageResource(Pictures.IMAGEBUTTON_IDS[0]);
             Toast.makeText(MemoryGameActivity.this, "Child Mode Activated!", Toast.LENGTH_SHORT).show();
         }
@@ -421,8 +447,9 @@ public class MemoryGameActivity extends BaseGameActivity implements NumberPicker
                     if (ENABLE_MEM_LOGS) Log.d("Pete", "Mode - DefaultValue: " + DefaultValue);
                     Index = i + 1;
 
-                    if(Index>=AchievementString.length)
+                    if(Index>=AchievementString.length) {
                         Index = i;
+                    }
 
                     NbrOfPictures = Integer.valueOf(AllowedValues[Index]);
                     if (ENABLE_MEM_LOGS) Log.d("Pete", "Mode - NbrOfPictures: " + NbrOfPictures);
@@ -434,6 +461,9 @@ public class MemoryGameActivity extends BaseGameActivity implements NumberPicker
                 }
 
             }
+
+            if(OpenPictures>0)
+                RestartNeeded=true;
 
             if(RestartNeeded) {
                 saveData();
@@ -462,6 +492,7 @@ public class MemoryGameActivity extends BaseGameActivity implements NumberPicker
 
         NbrOfPictures_tmp = Integer.valueOf(AllowedValues[newVal-1]);
         if (ENABLE_MEM_LOGS) Log.d("Pete", "onValueChange - newVal: " + newVal);
+        if (ENABLE_MEM_LOGS) Log.d("Pete", "onValueChange - oldVal: " + oldVal);
         if (ENABLE_MEM_LOGS) Log.d("Pete", "onValueChange - NbrOfPictures_tmp: " + NbrOfPictures_tmp);
         DefaultValue_tmp = newVal;
         PlayClick();
@@ -491,30 +522,78 @@ public class MemoryGameActivity extends BaseGameActivity implements NumberPicker
             public void onClick(View v) {
                 PlayClick();
 
-                DefaultValue = DefaultValue_tmp - 1;
+                //DefaultValue = DefaultValue_tmp - 1;
+                DefaultValue = DefaultValue_tmp;
                 NbrOfPictures = NbrOfPictures_tmp;
+
+                if (ENABLE_MEM_LOGS) Log.d("Pete", "onClick - DefaultValue: " + DefaultValue);
+                if (ENABLE_MEM_LOGS) Log.d("Pete", "onClick - NbrOfPictures: " + NbrOfPictures);
 
                 if(DefaultValue<0)
                     DefaultValue=0;
 
                 int Index;
-                if(DefaultValue==0)
+                if(DefaultValue<=1)
                     Index = 0;
                 else
-                    Index = DefaultValue - 1;
+                    Index = DefaultValue - 2;
+
+                if (ENABLE_MEM_LOGS) Log.d("Pete", "onClick - Index: " + Index);
 
                 if(!BabyMain.mSubscribedToInfiniteLaugh && child_mode==0 && DefaultValue>4) {
                     //showAlert(getString(R.string.level_not_available_in_free));
                     d.dismiss();
+
+                    int addthis;
+                    addthis = 0;
+
+                    if(!Achievement[0])
+                        addthis = 0;
+                    else
+                        addthis = 1;
+
+
+                    NbrOfPictures_tmp = Integer.valueOf(AllowedValues[RetunHigestLevelPossible()+addthis]);
+                    DefaultValue = RetunHigestLevelPossible() + addthis;
+                    DefaultValue_tmp = RetunHigestLevelPossible() + addthis;
+
                     ShowPopUp_Buy();
                 }else {
 
                     if (Achievement[Index] || AchievementOnServer[Index] || Index == 0 || child_mode == 1) {
+
                         d.dismiss();
-                        Start();
+
+                        if(Index == 0 && NbrOfPictures==6 && !Achievement[Index]){
+
+                            NbrOfPictures_tmp = Integer.valueOf(AllowedValues[RetunHigestLevelPossible()]);
+                            DefaultValue = RetunHigestLevelPossible();
+                            DefaultValue_tmp = RetunHigestLevelPossible();
+
+                            PopUpmessage = getString(R.string.level_not_available);
+                            ShowPopUp_OK(true);
+                        }else {
+                            Start();
+                        }
+
                     } else {
                         PopUpmessage = getString(R.string.level_not_available);
                         d.dismiss();
+
+                        int addthis;
+
+                        if(!Achievement[0])
+                            addthis = 0;
+                        else
+                            addthis = 1;
+
+                        NbrOfPictures_tmp = Integer.valueOf(AllowedValues[RetunHigestLevelPossible()+addthis]);
+                        DefaultValue = RetunHigestLevelPossible() + addthis;
+                        DefaultValue_tmp = RetunHigestLevelPossible() + addthis;
+
+                        if (ENABLE_MEM_LOGS) Log.d("Pete", "Here onClick - DefaultValue: " + DefaultValue);
+                        if (ENABLE_MEM_LOGS) Log.d("Pete", "Here onClick - NbrOfPictures_tmp: " + NbrOfPictures_tmp);
+
                         ShowPopUp_OK(true);
                         //showAlert(getString(R.string.level_not_available));
                     }
@@ -527,6 +606,13 @@ public class MemoryGameActivity extends BaseGameActivity implements NumberPicker
             public void onClick(View v) {
                 PlayClick();
                 d.dismiss(); // dismiss the dialog
+
+                if(NbrOfPictures_oncreate  != NbrOfPictures || DefaultValue_oncreate != DefaultValue) {
+                    NbrOfPictures = NbrOfPictures_oncreate;
+                    DefaultValue = DefaultValue_oncreate;
+                    saveData();
+                    Start();
+                }
             }
         });
         d.show();
@@ -894,7 +980,7 @@ public class MemoryGameActivity extends BaseGameActivity implements NumberPicker
         Display display = getWindowManager().getDefaultDisplay();
         Point size = new Point();
         display.getSize(size);
-        int windowWidth = size.x;
+        //int windowWidth = size.x;
         //int windowHeight = size.y;
 
         int FontSize = 16;
@@ -1005,7 +1091,7 @@ public class MemoryGameActivity extends BaseGameActivity implements NumberPicker
         Display display = getWindowManager().getDefaultDisplay();
         Point size = new Point();
         display.getSize(size);
-        int windowWidth = size.x;
+        //int windowWidth = size.x;
         //int windowHeight = size.y;
 
         int FontSize = 16;
