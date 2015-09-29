@@ -41,6 +41,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.NumberPicker;
 import android.widget.PopupWindow;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -62,7 +63,8 @@ public class MemoryGameActivity extends BaseGameActivity implements NumberPicker
     String[] AllowedValues;
     public static int SamePictures,oldposition,OpenPictures,NbrOfPictures,OpenPicureID,NbrOfPictures_tmp,DefaultValue, DefaultValue_tmp;
     public static int NbrOfPictures_oncreate,DefaultValue_oncreate;
-
+    public static final int FreeVersionLimit = 4;
+    public static int NextLevelArray;
     ImageView imageView_old;
     CountDownTimer MyCountDownTimer;
     CountDownTimer MyCountDownTimer2;
@@ -159,6 +161,7 @@ public class MemoryGameActivity extends BaseGameActivity implements NumberPicker
         NbrOfPictures_oncreate  = NbrOfPictures;
         DefaultValue_oncreate = DefaultValue;
 
+
         mp_click = MediaPlayer.create(this, R.raw.click);
         mp_fan = MediaPlayer.create(this, R.raw.fanfare);
 
@@ -193,9 +196,6 @@ public class MemoryGameActivity extends BaseGameActivity implements NumberPicker
         BitmapDrawable ob = new BitmapDrawable(getResources(), decodeSampledBitmapFromResource(imageView.getResources(), Pictures.MEMORY_BACKGROUND_IDS[pic_id], windowWidth, windowHeight));
 
         LinearLayout rLayout = (LinearLayout) findViewById (R.id.memory_activity);
-        //Resources res = getResources(); //resource handle
-        //Drawable drawable = res.getDrawable(Pictures.MEMORY_BACKGROUND_IDS[pic_id]); //new Image that was added to the res folder
-        //rLayout.setBackground(drawable);
         rLayout.setBackground(ob);
 
 
@@ -329,6 +329,7 @@ public class MemoryGameActivity extends BaseGameActivity implements NumberPicker
                     easyTracker.send(MapBuilder.createEvent("MemoryGameActivity", "All pictures open", Integer.toString(MemoryLevel), null).build());
                     //Toast.makeText(MemoryGameActivity.this, "All pictures open!!!!", Toast.LENGTH_SHORT).show();
                     SetAchievement();
+                    PlayNextLevel();
                 }
 
             }
@@ -540,7 +541,7 @@ public class MemoryGameActivity extends BaseGameActivity implements NumberPicker
 
                 if (ENABLE_MEM_LOGS) Log.d("Pete", "onClick - Index: " + Index);
 
-                if(!BabyMain.mSubscribedToInfiniteLaugh && child_mode==0 && DefaultValue>4) {
+                if(!BabyMain.mSubscribedToInfiniteLaugh && child_mode==0 && DefaultValue>FreeVersionLimit) {
                     //showAlert(getString(R.string.level_not_available_in_free));
                     d.dismiss();
 
@@ -1150,6 +1151,100 @@ public class MemoryGameActivity extends BaseGameActivity implements NumberPicker
         });
 
           //Just find some view where we can refer....
+        justfind = (ImageButton)findViewById(R.id.settings);
+        popupWindow.showAtLocation(justfind, Gravity.CENTER, 0, 0);
+        // POPUP WINDOW ENDS //
+
+    }
+
+    public void PlayNextLevel(){
+        if (ENABLE_MEM_LOGS) Log.d("Pete", "PlayNextLevel....");
+
+        Display display = getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        //int windowWidth = size.x;
+        //int windowHeight = size.y;
+
+        int FontSize = 20;
+
+        ImageButton justfind;
+
+        // POPUP WINDOW STARTS //
+        LayoutInflater layoutInflater  = (LayoutInflater)getBaseContext().getSystemService(LAYOUT_INFLATER_SERVICE);
+        View popupView = layoutInflater.inflate(R.layout.popup3, null);
+
+        // final PopupWindow popupWindow;
+        popupWindow = new PopupWindow(popupView, LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+        popupWindow.setFocusable(true);
+        //popupWindow.setWidth(windowWidth * 2 / 3);
+        //popupWindow.setHeight(windowWidth*2/3);
+        popupWindow.setOutsideTouchable(false);
+        popupWindow.setHeight(LayoutParams.WRAP_CONTENT);
+        popupWindow.setWidth(LayoutParams.WRAP_CONTENT);
+
+        String message = "Congratulations! Level Passed!";
+        String message2 = "Try next level?";
+
+        //RelativeLayout rl = (RelativeLayout)popupView.findViewById(R.id.popup_rl);
+        LinearLayout rl = (LinearLayout)popupView.findViewById(R.id.popup_rl);
+
+        TextView titleView = (TextView) rl.findViewById(R.id.header3);
+        TextView textview = (TextView) rl.findViewById(R.id.text3);
+        Button btnDismiss = (Button) rl.findViewById(R.id.button_cancel);
+        Button btnYes = (Button) rl.findViewById(R.id.button_yes);
+
+        titleView.setText(message);
+        titleView.setTextColor(Color.RED);
+        titleView.setTextSize(TypedValue.COMPLEX_UNIT_SP, FontSize);
+        titleView.setTypeface(titleView.getTypeface(), Typeface.BOLD);
+
+        textview.setText(message2);
+        textview.setTextColor(Color.RED);
+        textview.setTextSize(TypedValue.COMPLEX_UNIT_SP, FontSize);
+        textview.setTypeface(titleView.getTypeface(), Typeface.BOLD);
+
+        btnDismiss.setText("NO");
+        btnDismiss.setTextSize(TypedValue.COMPLEX_UNIT_SP, FontSize);
+        btnDismiss.setBackgroundResource(R.drawable.button_info_page);
+        btnDismiss.setTextColor(Color.WHITE);
+
+        btnDismiss.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (ENABLE_MEM_LOGS) Log.v("Pete", "ShowPopUp onClick - NO....");
+                popupWindow.dismiss();
+            }
+        });
+
+        btnYes.setText("YES");
+        btnYes.setTextSize(TypedValue.COMPLEX_UNIT_SP, FontSize);
+        btnYes.setBackgroundResource(R.drawable.button_info_page);
+        btnYes.setTextColor(Color.WHITE);
+
+        btnYes.setOnClickListener(new Button.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                if (ENABLE_MEM_LOGS) Log.v("Pete", "ShowPopUp onClick - YES....");
+                popupWindow.dismiss();
+                NextLevelArray = DefaultValue_oncreate + 1;
+
+                if (ENABLE_MEM_LOGS) Log.v("Pete", "ShowPopUp onClick - NextLevelArray: " + NextLevelArray);
+                if (ENABLE_MEM_LOGS) Log.v("Pete", "ShowPopUp onClick - FreeVersionLimit: " + FreeVersionLimit);
+                if (ENABLE_MEM_LOGS) Log.v("Pete", "ShowPopUp onClick - BabyMain.mSubscribedToInfiniteLaugh: " + BabyMain.mSubscribedToInfiniteLaugh);
+
+                if (!BabyMain.mSubscribedToInfiniteLaugh && NextLevelArray > FreeVersionLimit){
+                    ShowPopUp_Buy();
+                }else {
+                    NbrOfPictures = Integer.valueOf(AllowedValues[NextLevelArray]);
+                    saveData();
+                    Start();
+                }
+
+            }
+        });
+
+        //Just find some view where we can refer....
         justfind = (ImageButton)findViewById(R.id.settings);
         popupWindow.showAtLocation(justfind, Gravity.CENTER, 0, 0);
         // POPUP WINDOW ENDS //

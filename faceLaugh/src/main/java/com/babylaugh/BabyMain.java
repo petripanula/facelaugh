@@ -877,7 +877,7 @@ public class BabyMain extends BaseGameActivity implements NumberPicker.OnValueCh
    //Never used with this APP!!!!!
    public void onBuyGasButtonClicked(View arg0) {
 	   
-	   Toast.makeText(BabyMain.this,"onBuyGasButtonClicked", Toast.LENGTH_SHORT).show();
+	   //Toast.makeText(BabyMain.this,"onBuyGasButtonClicked", Toast.LENGTH_SHORT).show();
 	   
        if(ENABLE_LOGS) Log.d(TAG, "Buy gas button clicked.");
 
@@ -945,7 +945,7 @@ public class BabyMain extends BaseGameActivity implements NumberPicker.OnValueCh
 
    public void  InfiniteLaughButtonClicked(){
 
-       Toast.makeText(this,"onInfiniteGasButtonClicked", Toast.LENGTH_SHORT).show();
+       //Toast.makeText(this,"onInfiniteGasButtonClicked", Toast.LENGTH_SHORT).show();
 
        if (!mHelper.subscriptionsSupported()) {
            complain("Subscriptions not supported on your device yet. Sorry!");
@@ -963,7 +963,7 @@ public class BabyMain extends BaseGameActivity implements NumberPicker.OnValueCh
        String payload = "";
 
        setWaitScreen(true);
-       if(ENABLE_LOGS) Log.d(TAG, "Launching purchase flow for infinite gas subscription. SKU_INFINITE_GAS: " + SKU_INFINITE_LAUGH + " RC_REQUEST: " + RC_REQUEST);
+       if(ENABLE_LOGS) Log.d(TAG, "Launching purchase flow for infinite laugh subscription. SKU_INFINITE_GAS: " + SKU_INFINITE_LAUGH + " RC_REQUEST: " + RC_REQUEST);
        /* mHelper.launchPurchaseFlow(this,
                SKU_INFINITE_GAS, IabHelper.ITEM_TYPE_SUBS,
                RC_REQUEST, mPurchaseFinishedListener, payload);
